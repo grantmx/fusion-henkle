@@ -1,18 +1,25 @@
 <!doctype html>
-<html>
+<html ng-app="fusion">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="description" content="">
+
 <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimal-ui">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Fusion Mobile App">
+
+<meta name="mobile-web-app-capable" content="yes">
+
 <title>Fusion Mobile App</title>
 <link rel="stylesheet" href="http://demos.jquerymobile.com/1.4.2/css/themes/default/jquery.mobile-1.4.2.min.css" />
+<link rel="stylesheet" type="text/css" href="styles/addtohomescreen.css">
 <link rel="stylesheet" href="fonts/style.css" />
 <link rel="stylesheet" type="text/css" href="styles/app.css">
 
 <!-- iPhone (Retina) -->
-<link href="http://www.example.com/mobile/images/apple-startup-iPhone-RETINA.jpg" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+<link href="assets/phone-4-startup.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
 <!-- iPhone 5 -->
 <link href="http://www.example.com/mobile/images/apple-startup-iPhone-Tall-RETINA.jpg"  media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
 <!-- iPad Portrait -->
@@ -23,10 +30,15 @@
 <link href="http://www.example.com/mobile/images/apple-startup-iPad-RETINA-Portrait.jpg" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
 <!-- iPad Landscape (Retina) -->
 <link href="http://www.example.com/mobile/images/apple-startup-iPad-RETINA-Landscape.jpg" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+
+<link rel="apple-touch-icon" href="touch-icon-iphone.png">
+<link rel="apple-touch-icon" sizes="76x76" href="touch-icon-ipad.png">
+<link rel="apple-touch-icon" sizes="120x120" href="assets/iphone-4-icon-retnia.png">
+<link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad-retina.png">
 </head>
 <body>
 		
-	<form>
+	<form ng-controller="FusionAppController">
 
 		<div data-role="page" id="checkIn">
 			<div data-role="header" data-position="fixed">
@@ -36,23 +48,23 @@
 				<fieldset>
 					<div class="ui-grid-a">
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="storeNumber">Store Number</label></div></div>
-						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="number" name="store-number" id="storeNumber" placeholder=""/></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="number" name="store-number" id="storeNumber" ng-model="App.CheckIn.storeNumber" placeholder=""/></div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="demoDate">Demo Date</label></div></div>
-						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" readonly name="demo-date" id="demoDate" value="" placeholder="Demo Date"/></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" readonly name="demo-date" id="demoDate" value="{{App.CheckIn.demoDate}}" placeholder="Demo Date"/></div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="timeIn">Time In</label></div></div>
-						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="time-in" readonly id="timeIn" value="" placeholder="Time In (Read Only)"/></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="time-in" readonly id="timeIn" value="{{App.CheckIn.timeIn}}" placeholder="Time In (Read Only)"/></div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="inventory">Inventory</label></div></div>
-						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="number" name="inventory" id="inventory" value="" placeholder=""/></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="number" name="inventory" id="inventory" ng-model="App.CheckIn.inventory" value="" placeholder=""/></div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="price">Product Price</label></div></div>
-						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="number" name="price" id="price" value="" placeholder="$"/></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="number" name="price" id="price" ng-model="App.CheckIn.price" value="" placeholder="$"/></div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="location">Demo Location</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-						<select name="location" id="location">
+						<select name="location" id="location" ng-value="App.CheckIn.location">
 							<option selected></option>
 							<option value="paint">Across from the paint desk</option>
 							<option value="entrance">Near entrance</option>
@@ -62,7 +74,7 @@
 						</div></div>
 
 						<div class="ui-block-a hide" id="whenOther"><div class="ui-bar ui-bar-a row"><label for="otherLocation">Other Location</label></div></div>
-						<div class="ui-block-b hide" id="whenOtherField"><div class="ui-bar ui-bar-a row"><input type="text" name="otherLocation" id="otherLocation" value="" placeholder="Specify"/></div></div>
+						<div class="ui-block-b hide" id="whenOtherField"><div class="ui-bar ui-bar-a row"><input type="text" name="otherLocation" id="otherLocation" ng-model="App.CheckIn.otherLocation" value="" placeholder="Specify"/></div></div>
 
 					</div><!-- /grid-a -->
 				</fieldset>
@@ -90,8 +102,7 @@
 				
 			<fieldset>
 				<ol data-role="listview" class="report-list">
-					<li>Customer: 05-18-14 @ 3:55PM</li>
-					<li>Customer: 05-18-14 @ 4:30PM</li>
+					<li ng-repeat="guy in App.Interactions">{{guy.type}}: {{guy.date}} @ {{guy.time}}</li>
 				</ol>
 			</fieldset>
 
@@ -120,45 +131,45 @@
 					<div class="ui-grid-a">
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="type">Type of Demo</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-						<select name="type" id="type">
+						<select name="type" id="type" ng-model="type">
 							<option selected></option>
-							<option value="rubber_hose">Rubber Hose Demo</option>
-							<option value="dispenser">Dispenser Demo</option>
-							<option value="drip">Drip Control Demo</option>
-							<option value="strength">Strength Test Demo</option>
+							<option value="Rubber Hose">Rubber Hose Demo</option>
+							<option value="Dispenser">Dispenser Demo</option>
+							<option value="Drip Control">Drip Control Demo</option>
+							<option value="Strength Test">Strength Test Demo</option>
 						</select>
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="familiar" class="multiline">Knows Product</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row">
-							<select name="familiar" id="familiar" data-role="slider">
-								<option value="yes">Yes</option>
+							<select name="familiar" id="familiar" data-role="slider" ng-model="familiar">
+								<option value="yes" selected="selected">Yes</option>
 								<option value="no">No</option>
 							</select>
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="krazyGlue" class="multiline">Knows Krazy Glue</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row">
-							<select name="krazyGlue" id="krazyGlue" data-role="slider">
-								<option value="yes">Yes</option>
+							<select name="krazyGlue" id="krazyGlue" data-role="slider" ng-model="krazyGlue">
+								<option value="yes" selected>Yes</option>
 								<option value="no">No</option>
 							</select>
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="gorillaGlue" class="multiline">Knows Gorilla Glue</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row">
-							<select name="gorillaGlue" id="gorillaGlue" data-role="slider">
-								<option value="yes">Yes</option>
+							<select name="gorillaGlue" id="gorillaGlue" data-role="slider" ng-model="gorillaGlue">
+								<option value="yes" selected>Yes</option>
 								<option value="no">No</option>
 							</select>
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row xtall-row"><label for="comments">Comments</label></div></div>
-						<div class="ui-block-b"><div class="ui-bar ui-bar-a row xtall-row"><textarea type="text" name="comments" id="comments" placeholder=""></textarea></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row xtall-row"><textarea type="text" ng-model="comments" name="comments" id="comments" placeholder=""></textarea></div></div>
 					</div><!-- /grid-a -->
 				</fieldset>
 						
-				<a href="#" class="ui-btn btn">Add Interaction</a>
+				<a href="#report" class="ui-btn btn" ng-click="addInteractions()">Add Interaction</a>
 				
 			<div data-role="footer" data-position="fixed" id="footer">
 				<div data-role="navbar">
@@ -184,11 +195,11 @@
 				<fieldset>
 					<div class="ui-grid-a">
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="managerName" class="multiline">Store Manager Name</label></div></div>
-						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row"><input type="text" name="managerName" id="managerName" placeholder=""/></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row"><input type="text" name="managerName" ng-model="App.CheckOut.managerName" id="managerName" placeholder=""/></div></div>
 
-						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="reaction" class="multiline">Store Manager Reaction</label></div></div>
+						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="managerReaction" class="multiline">Store Manager Reaction</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-							<select name="reaction" id="reaction">
+							<select name="managerReaction" id="managerReaction" ng-value="App.CheckOut.managerReaction">
 								<option selected></option>
 								<option value="satisfied">Satisfied</option>
 								<option value="very_satisfied">Very Satisfied</option>
@@ -198,21 +209,21 @@
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row xtall-row"><label for="insights">Your Insights</label></div></div>
-						<div class="ui-block-b"><div class="ui-bar ui-bar-a row xtall-row"><textarea type="text" name="insights" id="insights" placeholder=""></textarea></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row xtall-row"><textarea type="text" name="insights" ng-model="App.CheckOut.insights" id="insights" placeholder=""></textarea></div></div>
 
-						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="reaction" class="multiline">Took Pics Of...</label></div></div>
+						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="pics" class="multiline">Took Pics Of...</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-							<select name="reaction" id="reaction">
+							<select name="pics" id="pics" ng-value="App.CheckOut.pics">
 								<option selected></option>
 								<option value="table">Table Setup</option>
 								<option value="display_demo_start">Display (start of demo)</option>
-								<option value="interaction">Consumer interaction</option>
+								<option value="interaction">Consumer Interaction</option>
 								<option value="display_demo_end">Display (end of demo)</option>
 							</select>
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="timeOut">Time Out</label></div></div>
-						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="timeOut" readonly id="timeOut" value="" placeholder="Time In (Read Only)"/></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="timeOut" readonly id="timeOut" value="{{App.CheckOut.timeOut}}" placeholder="Time In (Read Only)"/></div></div>
 
 					</div><!-- /grid-a -->
 				</fieldset>
@@ -235,6 +246,9 @@
 
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script> 
 <script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script> 
+<script type="text/javascript" src="scripts/angular.1.2.16.min.js"></script>
+<script type="text/javascript" src="scripts/addtohomescreen.js"></script>
+
 <script src="scripts/app.js" type="text/javascript"></script>
 </body>
 </html>

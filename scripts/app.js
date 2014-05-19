@@ -25,18 +25,6 @@ Date.prototype.timeNow = function () {
 
 	/* Set Time Function
 	-----------------------------------------*/
-	
-	//sets the default date and time for the checkin and checkout
-	app.setCheckInTime = function (time, date) {
-		var nowTime = new Date().timeNow(),
-			nowDate = new Date().today();
-
-		if(time){ document.getElementById(time).value = nowTime; }
-		
-		if(date){ document.getElementById(date).value = nowDate; }
-	};
-
-	app.setCheckInTime("timeIn", "demoDate");
 
 	//set time on click on checkout
 	function setTime(){
@@ -66,3 +54,64 @@ Date.prototype.timeNow = function () {
 		.on("click", "a[href='#checkOut']", setTime);
 
 }(window.app, window.jQuery);
+
+
+
+
+!function (angular, app, $){
+	var fusionApp = angular.module("fusion", []);
+
+	fusionApp.controller("FusionAppController", function ($scope, $http){
+	
+		//sets the default date and time for the checkin and checkout
+		$scope.setCheckInTime = function (time, date) {
+			var nowTime = new Date().timeNow(),
+				nowDate = new Date().today();
+
+			if(time){ return nowTime; }
+			if(date){ return nowDate; }
+			if(date && time){ return nowDate +" "+ nowTime; }
+		};
+
+		$scope.App = {};
+
+		$scope.App.CheckIn = {
+			storeNumber: "",
+			demoDate: $scope.setCheckInTime(false, true),
+			timeIn: $scope.setCheckInTime(true, false),
+			inventory: "",
+			price: "",
+			location: "",
+			otherLocation: ""
+		};
+
+		$scope.App.Interactions = [];
+
+		$scope.addInteractions = function(){
+			$scope.App.Interactions.push({
+				type: $scope.type,
+				familiar: $scope.familiar,
+				krazyGlue: $scope.krazyGlue,
+				gorillaGlue: $scope.gorillaGlue,
+				comments: $scope.comments,
+				date: $scope.setCheckInTime(false, true),
+				time: $scope.setCheckInTime(true, false),
+			});
+
+
+		};
+
+		$scope.App.CheckOut = {
+			managerName: "",
+			managerReaction: "",
+			insights: "",
+			pics: "",
+			timeOut: $scope.setCheckInTime(true, false)
+		};
+
+		$(document).on("blur", "input",function(){ console.log($scope.App) });
+	});
+
+}(window.angular, window.app, window.jQuery);
+
+
