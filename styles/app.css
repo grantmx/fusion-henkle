@@ -6,7 +6,8 @@
 .ui-mobile fieldset{margin:15px; background-color: #fff; border-radius: 5px; box-shadow: 0 3px 5px #ccc;}
 .ui-mobile label{margin-top: 3%}
 
-.ui-page-theme-a .ui-btn.btn{margin: 15px; border-radius: 5px; box-shadow: 0 3px 5px #ccc; border:none; background-color: #2ecc71; color: #fff; text-transform: uppercase; text-shadow:none;}
+.ui-page-theme-a .ui-btn.btn{margin: 15px; border-radius: 5px; background-color: #ddd; color: #555; text-transform: uppercase; text-shadow:none;}
+.submit{background-color: #2ecc71;}
 
 .row{height: 50px}
 .row.tall-row{height:60px}
@@ -25,7 +26,8 @@
 input[readonly]{color:#bbb;}
 input:focus{border: none; box-shadow: none; outline: none}
 
-.report-list li{border-bottom: 1px solid #ddd}
+.report-list{margin:0;}
+.report-list li{/*border-bottom: 1px solid #ddd; */padding:15px 0;}
 
 .hide{display: none; visibility: hidden;}
 

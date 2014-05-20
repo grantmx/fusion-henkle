@@ -23,19 +23,6 @@ Date.prototype.timeNow = function () {
 	};
 
 
-	/* Set Time Function
-	-----------------------------------------*/
-
-	//set time on click on checkout
-	function setTime(){
-		app.setCheckInTime("timeOut", false);
-	}
-
-	//set the time if the page was refreshed on the checkout page
-	if(window.location.hash === "#checkOut"){
-		app.setCheckInTime("timeOut", false);
-	}
-
 
 	/* Show Hide Other Field
 	-----------------------------------------*/
@@ -47,11 +34,19 @@ Date.prototype.timeNow = function () {
 	}
 
 
+	/* resets the Customer Interaction form's UI
+	-----------------------------------------*/
+	function resetForm(){
+		$("input[type='checkbox']").siblings("label").removeClass("ui-checkbox-on").addClass("ui-checkbox-off");
+		$("select").siblings('span').html("&nbsp;");
+	}
+
+
 	/* Event Listners
 	-----------------------------------------*/
 	$(document)
 		.on("change", "#location", showHideOther)
-		.on("click", "a[href='#checkOut']", setTime);
+		.on("click", "#finish", resetForm);
 
 }(window.app, window.jQuery);
 
@@ -73,9 +68,20 @@ Date.prototype.timeNow = function () {
 			if(date && time){ return nowDate +" "+ nowTime; }
 		};
 
+		$scope.demos = [
+			{label: "Rubber Hose Demo", value: "Rubber Hose"},
+			{label: "Dispenser Demo", value: "Dispenser"},
+			{label: "Drip Control Demo", value: "Drip Control"},
+			{label: "Strength Test Demo", value: "Strength Test"}
+		];
+
+		/* Main App Model Data
+		----------------------------------------*/
 		$scope.App = {};
 
+		//checkin page
 		$scope.App.CheckIn = {
+			staffid: "",
 			storeNumber: "",
 			demoDate: $scope.setCheckInTime(false, true),
 			timeIn: $scope.setCheckInTime(true, false),
@@ -85,11 +91,13 @@ Date.prototype.timeNow = function () {
 			otherLocation: ""
 		};
 
+		//Interaction parent
 		$scope.App.Interactions = [];
 
+		//Interaction itteration
 		$scope.addInteractions = function(){
 			$scope.App.Interactions.push({
-				type: $scope.type,
+				type: $scope.type.value,
 				familiar: $scope.familiar,
 				krazyGlue: $scope.krazyGlue,
 				gorillaGlue: $scope.gorillaGlue,
@@ -98,18 +106,25 @@ Date.prototype.timeNow = function () {
 				time: $scope.setCheckInTime(true, false),
 			});
 
+			//resets the form data
+			$scope.type = "";
+			$scope.familiar = false;
+			$scope.krazyGlue = false;
+			$scope.gorillaGlue = false;
+			$scope.comments = "";
 
+			console.log($scope.App);
 		};
 
+		//Checkout page
 		$scope.App.CheckOut = {
 			managerName: "",
 			managerReaction: "",
 			insights: "",
 			pics: "",
-			timeOut: $scope.setCheckInTime(true, false)
+			timeOut:""
 		};
 
-		$(document).on("blur", "input",function(){ console.log($scope.App) });
 	});
 
 }(window.angular, window.app, window.jQuery);
