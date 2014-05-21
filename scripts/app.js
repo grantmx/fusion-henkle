@@ -48,6 +48,7 @@ Date.prototype.timeNow = function () {
 		.on("change", "#location", showHideOther)
 		.on("click", "#finish", resetForm);
 
+
 }(window.app, window.jQuery);
 
 
@@ -57,6 +58,7 @@ Date.prototype.timeNow = function () {
 	var fusionApp = angular.module("fusion", []);
 
 	fusionApp.controller("FusionAppController", function ($scope, $http){
+		var count = 1;
 	
 		//sets the default date and time for the checkin and checkout
 		$scope.setCheckInTime = function (time, date) {
@@ -112,8 +114,6 @@ Date.prototype.timeNow = function () {
 			$scope.krazyGlue = false;
 			$scope.gorillaGlue = false;
 			$scope.comments = "";
-
-			console.log($scope.App);
 		};
 
 		//Checkout page
@@ -122,8 +122,29 @@ Date.prototype.timeNow = function () {
 			managerReaction: "",
 			insights: "",
 			pics: "",
-			timeOut:""
+			timeOut: ""
 		};
+
+		/* sets the checkout time on the checkout hash
+		----------------------------------------------------------------*/
+		$scope.setCheckOut = function(){
+			var time = (window.location.hash === "#checkOut") ? $scope.setCheckInTime(true, false) : "";
+
+			//make sure its only setting once
+			if(count === 1 && Boolean(time)){
+				$scope.App.CheckOut.timeOut = time;
+				document.getElementById("timeOut").value = time; //for some reason angular isnt taking the inital binding, but on second click it will, so I have to update it manually.
+				count += 1;
+			}
+		};
+
+		$(window).on("hashchange", $scope.setCheckOut);
+
+
+		$scope.submitReport = function(){
+			console.log($scope.App);
+		};
+
 
 	});
 

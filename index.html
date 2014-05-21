@@ -13,7 +13,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <title>Fusion Mobile App</title>
-<link rel="stylesheet" href="http://demos.jquerymobile.com/1.4.2/css/themes/default/jquery.mobile-1.4.2.min.css" />
+<link rel="stylesheet" href="styles/jquery.mobile-1.4.2.min.css" />
 <link rel="stylesheet" type="text/css" href="styles/addtohomescreen.css">
 <link rel="stylesheet" href="fonts/style.css" />
 <link rel="stylesheet" type="text/css" href="styles/app.css">
@@ -39,6 +39,28 @@
 <body>
 		
 	<form ng-controller="FusionAppController">
+
+
+		<div data-role="page" id="login" class="login-page">
+			<div class="align-center center">
+				<h1 class="yellow-txt"><img src="assets/fusion_logo.png" /><br> Fusion-Henkle</h1>
+			</div>
+				
+			<fieldset>
+				<div class="ui-grid-a">
+					<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="username">Username</label></div></div>
+					<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="username" id="username" placeholder=""/></div></div>
+
+					<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="pass">Password</label></div></div>
+					<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="password" name="password" id="pass" placeholder=""/></div></div>
+				</div>
+			</fieldset>
+
+			<a href="#checkIn" class="ui-btn btn">Login</a>
+		</div>
+
+
+
 
 		<div data-role="page" id="checkIn">
 			<div data-role="header" data-position="fixed">
@@ -67,7 +89,7 @@
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="location">Demo Location</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-						<select name="location" id="location" ng-value="App.CheckIn.location">
+						<select name="location" id="location" ng-model="App.CheckIn.location">
 							<option selected></option>
 							<option value="paint">Across from the paint desk</option>
 							<option value="entrance">Near entrance</option>
@@ -87,7 +109,7 @@
 					<ul class="footer-links">
 						<li><a href="#checkIn" class="ui-btn-active"><i class="icon-arrow-down2"></i><br> Check In</a></li>
 						<li><a href="#report"><i class="icon-signup"></i><br> Interactions</a></li>
-						<li><a href="#checkOut"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
+						<li><a href="#checkOut" ng-click="setCheckOut()"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
 					</ul>
 				</div>
 			</div><!-- /navbar -->
@@ -116,7 +138,7 @@
 					<ul class="footer-links">
 						<li><a href="#checkIn"><i class="icon-arrow-down2"></i><br> Check In</a></li>
 						<li><a href="#report" class="ui-btn-active"><i class="icon-signup"></i><br> Interactions</a></li>
-						<li><a href="#checkOut"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
+						<li><a href="#checkOut" ng-click="setCheckOut()"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
 					</ul>
 				</div>
 			</div><!-- /navbar -->
@@ -174,7 +196,7 @@
 					<ul class="footer-links">
 						<li><a href="#checkIn"><i class="icon-arrow-down2"></i><br> Check In</a></li>
 						<li><a href="#report" class="ui-btn-active"><i class="icon-signup"></i><br> Interactions</a></li>
-						<li><a href="#checkOut"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
+						<li><a href="#checkOut" ng-click="setCheckOut()"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
 					</ul>
 				</div>
 			</div><!-- /navbar -->
@@ -197,7 +219,7 @@
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="managerReaction" class="multiline">Store Manager Reaction</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-							<select name="managerReaction" id="managerReaction" ng-value="App.CheckOut.managerReaction">
+							<select name="managerReaction" id="managerReaction" ng-model="App.CheckOut.managerReaction">
 								<option selected></option>
 								<option value="satisfied">Satisfied</option>
 								<option value="very_satisfied">Very Satisfied</option>
@@ -211,7 +233,7 @@
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="pics" class="multiline">Took Pics Of...</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-							<select name="pics" id="pics" ng-value="App.CheckOut.pics">
+							<select name="pics" id="pics" ng-model="App.CheckOut.pics">
 								<option selected></option>
 								<option value="table">Table Setup</option>
 								<option value="display_demo_start">Display (start of demo)</option>
@@ -221,12 +243,12 @@
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="timeOut">Time Out</label></div></div>
-						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="timeOut" readonly id="timeOut" value="{{App.CheckOut.timeOut}}" placeholder="Time In (Read Only)"/></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="timeOut" id="timeOut" placeholder="(Read Only)"/></div></div>
 
 					</div><!-- /grid-a -->
 				</fieldset>
 
-			<a class="ui-btn btn">Send My Report</a>
+			<a class="ui-btn btn" href="" ng-click="submitReport()">Send My Report</a>
 
 
 			<div data-role="footer" data-position="fixed" id="footer">
@@ -234,7 +256,7 @@
 					<ul class="footer-links">
 						<li><a href="#checkIn"><i class="icon-arrow-down2"></i><br> Check In</a></li>
 						<li><a href="#report"><i class="icon-signup"></i><br> Interactions</a></li>
-						<li><a href="#checkOut" class="ui-btn-active"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
+						<li><a href="#checkOut" class="ui-btn-active" ng-click="setCheckOut()"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
 					</ul>
 				</div>
 			</div><!-- /navbar -->
