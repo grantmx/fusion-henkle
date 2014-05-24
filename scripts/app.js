@@ -3,7 +3,7 @@
 var app = app || {};
 
 /*-------------- Example URLs ------------------
-* get - http://appmanagr.net/mobile/index.php/api/rest/read_entry/json?auth[username]=grantmx&auth[password]=malaka&data[entry_id]=1
+* get - http://appmanagr.net/mobile/index.php/api/rest/read_entry/json?data[entry_id]=1
 * auth - http://appmanagr.net/mobile/index.php/api/rest/authenticate_username/json?auth[username]=grantmx&auth[password]=malaka
 * create - http://appmanagr.net/mobile/index.php/api/rest/create_entry/json?auth[username]=grantmx&auth[password]=malaka&data[channel_name]=interactions&data[title]=blah&data[site_id]=1
 -----------------------------------------------*/
@@ -52,6 +52,13 @@ Date.prototype.timeNow = function () {
 		}
 	}();
 
+	//Message to show at the top of the page when a save occurs
+	app.showSavedMessage = function(){
+		var nowTime = new Date().timeNow(),
+			nowDate = new Date().today();
+
+		$("p.saved-message").text("Last saved " + nowDate +" " + nowTime);
+	};
 
 	/* Show Hide Other Field
 	-----------------------------------------*/
@@ -112,7 +119,14 @@ Date.prototype.timeNow = function () {
 
 				//creates a new record in the backend
 				submit: function(data){
-					serviceURL = config.url +"/"+ config.methods.create +"/"+ config.type +"/"+ authData +"&"+ data;
+					serviceURL = config.url +"/"+ config.methods.create +"/"+ config.type + authData +"&"+ data;
+
+					var promise = $http({ method: "GET", url: serviceURL, headers: {'Content-Type': 'application/json'} })
+						.then(function(response){
+							return response.data;
+						});
+
+					return promise;
 				}
 			};
 
@@ -148,9 +162,63 @@ Date.prototype.timeNow = function () {
 
 
 
+	/* URL Builder service for final form submission
+	----------------------------------------------------*/
+	fusionApp.service("urlBuilder", function(){
+		var data = "", interactionsData;
+
+		//URL constructor function
+		this.construct = function(formData){
+			data += "data[channel_name]=interactions&";
+			data += "data[site_id]=1&";
+
+
+			//adds all the fields except for interactions
+			angular.forEach(formData, function (value, key) {
+				if(key !== "interactions"){
+					data += "data["+key+"]="+(value !== "" ? value : 0)+"&";
+				}
+			});
+
+
+			//build interactions objects
+			interactionsData = (function(){
+				var dataArray = [], i, row = "",
+					customers = formData.interactions.length;
+
+				for (i = customers - 1; i >= 0; i -= 1) {
+					row += "{" +
+							'row_id:'+ (i+1) + ',' +
+							'row_order:'+ i + ',' +
+							'type:'+ formData.interactions[i].type + ',' +
+							'familiar:'+ formData.interactions[i].familiar + ',' +
+							'krazyGlue:'+ formData.interactions[i].krazyGlue + ',' +
+							'gorillaGlue:'+ formData.interactions[i].gorillaGlue + ',' +
+							'comments:'+ formData.interactions[i].comments + ',' +
+							'date:'+ formData.interactions[i].date + ',' +
+							'time:'+ formData.interactions[i].time +
+						"},";
+				}
+
+				row = row.slice(0, -1);
+
+				return "&data[interactions]="+row;
+
+			}());
+
+			data += interactionsData;
+
+			return data;
+		};
+	});
+
+
+
+
+
 	/* App Controller
 	----------------------------------------------------*/
-	fusionApp.controller("FusionAppController", function ($scope, apiService, locStorage, $q){
+	fusionApp.controller("FusionAppController", function ($scope, apiService, locStorage, $q, urlBuilder){
 		var count = 1, autoSave;
 
 
@@ -183,7 +251,6 @@ Date.prototype.timeNow = function () {
 				window.location.href = "#checkIn";
 
 				startAutoSave();
-
 				checkStorage();
 			}
 		}
@@ -219,7 +286,7 @@ Date.prototype.timeNow = function () {
 			timeIn: $scope.setCheckInTime(true, false),
 			inventory: "",
 			price: "",
-			location: "",
+			demoLocation: "",
 			otherLocation: "",
 
 			//checkout
@@ -230,6 +297,7 @@ Date.prototype.timeNow = function () {
 			timeOut: ""
 		};
 
+		$scope.App.title = "Fusion-Henkle"
 
 		//Interaction parent
 		$scope.App.interactions = [];
@@ -278,26 +346,37 @@ Date.prototype.timeNow = function () {
 			}
 		}
 
-		$(window)
-			.on("hashchange", $scope.setCheckOut)
-			.on("hashchange", checkStorage);
 
 
-
-		/* Auto Saves every 30 secons via the storage service
+		/* Auto Saves every 60 secons via the storage service
 		----------------------------------------------------------------*/
 		function startAutoSave(){
 			autoSave = setInterval(function(){
-				locStorage.save($scope.App);
-			}, 30000);
+				locStorage.save(JSON.stringify($scope.App));
+				app.showSavedMessage();
+			}, 60000);
 		}
 
 
 
-
+		/* Build the data URL and Submit
+		----------------------------------------------------------------*/
 		$scope.submitReport = function(){
-			console.log($scope.App);
+			var dataUrl = urlBuilder.construct($scope.App);
+
+			apiService.submit(dataUrl)
+				.then(function(data){
+					alert("success");
+				});
 		};
+
+
+
+		/* listners
+		----------------------------------------------------------------*/
+		$(window)
+			.on("hashchange", $scope.setCheckOut)
+			.on("hashchange", checkStorage);
 
 
 	});

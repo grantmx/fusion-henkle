@@ -49,10 +49,10 @@
 			<fieldset>
 				<div class="ui-grid-a">
 					<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="username">Username</label></div></div>
-					<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="username" id="username" ng-model="username" placeholder=""/></div></div>
+					<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="username" value="grantmx" id="username" ng-model="username" placeholder=""/></div></div>
 
 					<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="pass">Password</label></div></div>
-					<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="password" name="password" id="pass" ng-model="password" placeholder=""/></div></div>
+					<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="password" name="password" id="pass" value="malaka" ng-model="password" placeholder=""/></div></div>
 				</div>
 			</fieldset>
 
@@ -66,6 +66,8 @@
 			<div data-role="header" data-position="fixed">
 				<h1>Check In</h1>
 			</div>
+
+			<p class="saved-message"></p>
 
 				<fieldset>
 					<div class="ui-grid-a">
@@ -89,7 +91,7 @@
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="location">Demo Location</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-						<select name="location" id="location" ng-model="App.location">
+						<select name="location" id="location" ng-model="App.demoLocation">
 							<option selected></option>
 							<option value="paint">Across from the paint desk</option>
 							<option value="entrance">Near entrance</option>
@@ -104,6 +106,20 @@
 					</div><!-- /grid-a -->
 				</fieldset>
 				
+
+			<div data-role="popup" id="popupDialog" data-overlay-theme="a" data-dismissible="false" style="max-width:400px;">
+				<div data-role="header" data-theme="a">
+					<h1>Delete Page?</h1>
+				</div>
+
+				<div role="main" class="ui-content">
+					<h3 class="ui-title">Are you sure you want to delete this page?</h3>
+					<p>This action cannot be undone.</p>
+					<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
+					<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow">Delete</a>
+				</div>
+			</div>
+
 			<div data-role="footer" data-position="fixed" id="footer">
 				<div data-role="navbar">
 					<ul class="footer-links">
@@ -124,6 +140,8 @@
 				<h1>Interactions</h1>
 				<a href="#add" class="header-nav-item ui-btn-right"><i class="icon-plus"></i></a>
 			</div>
+
+			<p class="saved-message"></p>
 				
 			<fieldset>
 				<ol class="report-list">
@@ -153,6 +171,8 @@
 				<a href="#report" class="header-nav-item ui-btn-left"><i class="icon-chevron-left"></i></a>
 				<h1>Report</h1>
 			</div>
+
+			<p class="saved-message"></p>
 				
 				<fieldset>
 					<div class="ui-grid-a">
@@ -215,6 +235,8 @@
 			<div data-role="header" data-position="fixed">
 				<h1>Check Out</h1>
 			</div>
+
+			<p class="saved-message"></p>
 				
 				<fieldset>
 					<div class="ui-grid-a">
@@ -270,20 +292,6 @@
 		<!-- popups -->
 		<div id="overlay" data-role="popup" data-overlay-theme="a" class="ui-content" style="display:none">
 			<p>I have a <code>data-overlay-theme="a"</code> set on me</p>
-		</div>
-
-
-		<div data-role="popup" id="popupDialog" data-overlay-theme="a" data-dismissible="false" style="max-width:400px; display:none;">
-			<div data-role="header" data-theme="a">
-				<h1>Delete Page?</h1>
-			</div>
-
-			<div role="main" class="ui-content">
-				<h3 class="ui-title">Are you sure you want to delete this page?</h3>
-				<p>This action cannot be undone.</p>
-				<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
-				<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow">Delete</a>
-			</div>
 		</div>
 
 	</form>
