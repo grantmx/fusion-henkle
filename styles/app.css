@@ -1,3 +1,6 @@
+html, body *{
+	text-shadow:none;
+}
 
 .hide{display: none; visibility: hidden;}
 .align-center{margin:0 auto;}
@@ -12,6 +15,12 @@
 
 input[readonly]{color:#bbb;}
 input:focus{border: none; box-shadow: none; outline: none}
+
+input[placeholder].error{
+	color: #c0392b;
+}
+
+
 
 .report-list{margin:0;}
 .report-list li{/*border-bottom: 1px solid #ddd; */padding:15px 0;}
@@ -34,7 +43,6 @@ input:focus{border: none; box-shadow: none; outline: none}
 .ui-page-theme-a .ui-slider-track .ui-btn-active, html .ui-bar-a .ui-slider-track .ui-btn-active{background-color: #555}
 
 /* Login Page*/
-.ui-page-theme-a h1{text-shadow:none;}
 .login-page.ui-page-theme-a{background-color: #333}
 .login-page.ui-page-theme-a fieldset{box-shadow: none}
 .login-page.ui-page-theme-a .ui-btn.btn{background-color: #444; color: #eee; border:none;}
