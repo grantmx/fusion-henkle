@@ -43,7 +43,7 @@
 
 		<div data-role="page" id="login" class="login-page">
 			<div class="align-center center">
-				<h1 class="yellow-txt"><img src="assets/fusion_logo.png" /><br> Fusion-Henkle</h1>
+				<h1 class="yellow-txt"><img src="assets/fusion_logo.png" /><br> Fusion / Henkle</h1>
 			</div>
 				
 			<fieldset>
@@ -56,7 +56,7 @@
 				</div>
 			</fieldset>
 
-			<a ng-click="login()" class="ui-btn btn">Login</a>
+			<div data-login class="login-cntr"></div>
 		</div>
 
 
@@ -165,33 +165,29 @@
 					<div class="ui-grid-a">
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="type">Type of Demo</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-							<select name="type" id="type" ng-model="type">
+							<select name="type" id="type" ng-model="type" ng-options="demo.label for demo in demos">
 								<option selected></option>
-								<option value="table">Table Setup</option>
-								<option value="display_demo_start">Display (start of demo)</option>
-								<option value="interaction">Consumer Interaction</option>
-								<option value="display_demo_end">Display (end of demo)</option>
 							</select>
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="familiar" class="multiline">Knows Product</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
 							<label>
-								<input type="checkbox" name="familiar" id="familiar" ng-model="familiar"> Yes
+								<input type="checkbox" name="familiar" class="interact" id="familiar" ng-model="familiar"> Yes
 							</label>
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="krazyGlue" class="multiline">Knows Krazy Glue</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
 							<label>
-								<input type="checkbox" name="krazyGlue" id="krazyGlue" ng-model="krazyGlue"> Yes
+								<input type="checkbox" name="krazyGlue" class="interact" id="krazyGlue" ng-model="krazyGlue"> Yes
 							</label>
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="gorillaGlue" class="multiline">Knows Gorilla Glue</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
 							<label>
-								<input type="checkbox"  name="gorillaGlue" id="gorillaGlue" ng-model="gorillaGlue"> Yes
+								<input type="checkbox"  name="gorillaGlue" class="interact" id="gorillaGlue" ng-model="gorillaGlue"> Yes
 							</label>
 						</div></div>
 

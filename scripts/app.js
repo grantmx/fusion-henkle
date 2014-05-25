@@ -1,15 +1,15 @@
 
+
+
+
+/* ---------------------------------------
+	Global Configurations
+-----------------------------------------*/
+
 //namespace
 var app = app || {};
 
-/*-------------- Example URLs ------------------
-* get - http://appmanagr.net/mobile/index.php/api/rest/read_entry/json?data[entry_id]=1
-* auth - http://appmanagr.net/mobile/index.php/api/rest/authenticate_username/json?auth[username]=grantmx&auth[password]=malaka
-* create - http://appmanagr.net/mobile/index.php/api/rest/create_entry/json?auth[username]=grantmx&auth[password]=malaka&data[channel_name]=interactions&data[title]=blah&data[site_id]=1
------------------------------------------------*/
-
-/* Global Configurations
------------------------------------------*/
+//configs
 app.config = {
 	url: "http://appmanagr.net/mobile/index.php/api/rest",
 	type: "json?",
@@ -23,6 +23,10 @@ app.config = {
 };
 
 
+/* ---------------------------------------
+	Helper Methods
+-----------------------------------------*/
+
 // For todays date;
 Date.prototype.today = function () {
 	return((this.getDate() < 10) ? "0" : "") + (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth() + 1) + "-" + this.getDate() + "-" + this.getFullYear();
@@ -35,6 +39,9 @@ Date.prototype.timeNow = function () {
 
 
 
+/* ----------------------------------------------------
+	Defacto Controllers that have some DOM interation
+-------------------------------------------------------*/
 !function (app, $){
 
 	//MOBILE: scroll past the nav bar to hide
@@ -52,13 +59,15 @@ Date.prototype.timeNow = function () {
 		}
 	}();
 
+
 	//Message to show at the top of the page when a save occurs
 	app.showSavedMessage = function(){
 		var nowTime = new Date().timeNow(),
 			nowDate = new Date().today();
 
-		$("p.saved-message").text("Last saved " + nowDate +" " + nowTime);
+		$("p.saved-message").text("Last saved " + nowDate +" at " + nowTime);
 	};
+
 
 	/* Show Hide Other Field
 	-----------------------------------------*/
@@ -73,12 +82,12 @@ Date.prototype.timeNow = function () {
 	/* resets the Customer Interaction form's UI
 	-----------------------------------------*/
 	function resetForm(){
-		$("input[type='checkbox']").siblings("label").removeClass("ui-checkbox-on").addClass("ui-checkbox-off");
-		$("select").siblings('span').html("&nbsp;");
+		$("input.interact").siblings("label").removeClass("ui-checkbox-on").addClass("ui-checkbox-off");
+		$("#type").siblings('span').html("&nbsp;");
 	}
 
 
-	/* Event Listners
+	/* Listners
 	-----------------------------------------*/
 	$(document)
 		.on("change", "#location", showHideOther)
@@ -90,41 +99,42 @@ Date.prototype.timeNow = function () {
 
 
 
+/* ----------------------------------------------------------------
+	Angular Controller, Service & Directive Methods
+------------------------------------------------------------------*/
+
 !function (angular, app, $){
 	var fusionApp = angular.module("fusion", []);
 
-
 	/* API Serice communction wih our backend
-	----------------------------------------------------*/
+	----------------------------------------------------------------------------------------------------
+	* get - http://appmanagr.net/mobile/index.php/api/rest/read_entry/json?data[entry_id]=1
+	* auth - http://appmanagr.net/mobile/index.php/api/rest/authenticate_username/json?auth[username]=grantmx&auth[password]=malaka
+	* create - appmanagr.net/mobile/index.php/api/rest/create_entry/json?auth[username]=grantmx&auth[password]=malaka&data[channel_name]=interactions&data[site_id]=1&data[title]=entryApi&data[interactions][rows][0][type]=1&data[interactions][rows][0][familiar]=1&data[interactions][rows][1][type]=2&data[interactions][rows][1][familiar]=2
+	---------------------------------------------------------------------------------------------------*/
+
 	fusionApp.service('apiService', function ($http, $q){
-		var serviceURL, response,
+		var serviceURL, response, authData,
 			config = app.config,
-			authData,
 			apiService = {
 
 				//authroizes the user aginst the backend
-				auth: function(user, pass){
+				auth: function(user, pass, promise){
 					authData = "auth[username]="+ user +"&auth[password]="+ pass;
 
 					serviceURL = config.url +"/"+ config.methods.auth +"/"+ config.type + authData;
 
-					var promise = $http({ method: "GET", url: serviceURL, headers: {'Content-Type': 'application/json'} })
-						.then(function(response){
-							return response.data;
-						});
+					promise = $http.get(serviceURL).then(function (response){ return response.data; });
 
 					return promise;
 				},
 
 
 				//creates a new record in the backend
-				submit: function(data){
+				submit: function(data, promise){
 					serviceURL = config.url +"/"+ config.methods.create +"/"+ config.type + authData +"&"+ data;
 
-					var promise = $http({ method: "GET", url: serviceURL, headers: {'Content-Type': 'application/json'} })
-						.then(function(response){
-							return response.data;
-						});
+					promise = $http.get(serviceURL).then(function (response){ return response.data; });
 
 					return promise;
 				}
@@ -149,7 +159,6 @@ Date.prototype.timeNow = function () {
 		//gets the fusionHenkle object
 		this.get = function(){
 			var itemStored = window.localStorage["fusionHenkle"];
-
 			return (itemStored === undefined) ? 0 : itemStored;
 		};
 
@@ -178,33 +187,26 @@ Date.prototype.timeNow = function () {
 			//adds all the fields except for interactions
 			angular.forEach(formData, function (value, key) {
 				if(key !== "interactions"){
-					data += "data["+key+"]="+(value !== "" ? value : 0)+"&";
+					data += "data["+ key +"]="+ (value !== "" ? value : 0) +"&";
 				}
 			});
 
 
 			//build interactions objects
 			interactionsData = (function(){
-				var dataArray = [], i, row = "",
-					customers = formData.interactions.length;
+				var i, row = "", customers = formData.interactions.length;
 
 				for (i = customers - 1; i >= 0; i -= 1) {
-					row += "{" +
-							'row_id:'+ (i+1) + ',' +
-							'row_order:'+ i + ',' +
-							'type:'+ formData.interactions[i].type + ',' +
-							'familiar:'+ formData.interactions[i].familiar + ',' +
-							'krazyGlue:'+ formData.interactions[i].krazyGlue + ',' +
-							'gorillaGlue:'+ formData.interactions[i].gorillaGlue + ',' +
-							'comments:'+ formData.interactions[i].comments + ',' +
-							'date:'+ formData.interactions[i].date + ',' +
-							'time:'+ formData.interactions[i].time +
-						"},";
+					row += "&data[interactions][rows]["+ i +"][type]="+ formData.interactions[i].type;
+					row += "&data[interactions][rows]["+ i +"][familiar]="+ (formData.interactions[i].familiar === undefined ? false : formData.interactions[i].familiar);
+					row += "&data[interactions][rows]["+ i +"][krazyGlue]="+ (formData.interactions[i].krazyGlue === undefined ? false : formData.interactions[i].krazyGlue);
+					row += "&data[interactions][rows]["+ i +"][gorillaGlue]="+ (formData.interactions[i].gorillaGlue === undefined ? false : formData.interactions[i].gorillaGlue);
+					row += "&data[interactions][rows]["+ i +"][comments]="+ (formData.interactions[i].comments === undefined ? false : formData.interactions[i].comments);
+					row += "&data[interactions][rows]["+ i +"][date]="+ formData.interactions[i].date;
+					row += "&data[interactions][rows]["+ i +"][time]="+ formData.interactions[i].time;
 				}
 
-				row = row.slice(0, -1);
-
-				return "&data[interactions]="+row;
+				return row;
 
 			}());
 
@@ -217,6 +219,69 @@ Date.prototype.timeNow = function () {
 
 
 
+	/* Login Directive: sets login button and displays messages
+	----------------------------------------------------------------*/
+	fusionApp.directive('login', function (apiService){
+		return {
+			scope: {},
+			restrict: 'AE',
+			template: '<a href="#" class="ui-btn btn">Login</a>',
+			link: function(scope, element) {
+				var $scope = scope.$parent;
+
+				//called on login and uses the auth service
+				element.click(function(){
+					var validUser = angular.isDefined($scope.username), auth,
+						validPass = angular.isDefined($scope.password);
+
+					if(!validUser){
+						$("#username").attr("placeholder", "Required!");
+					}
+
+					if(!validPass){
+						$("#pass").attr("placeholder", "Required!");
+					}
+
+					if(validUser && validPass){
+						apiService.auth($scope.username, $scope.password)
+							.then(function (data){
+								setup(data);
+
+							}, function (data){
+								displayErrorMessage(data);
+							});
+					}
+				});
+
+
+				//setup after good auth
+				function setup (response){
+					if(response.code === 200){
+						app.config.loggedin = true;
+						window.location.href = "#checkIn";
+
+						app.startAutoSave();
+						app.checkStorage();
+					}
+				}
+
+
+				//displays the error message on the login page when there was a problem
+				function displayErrorMessage (response){
+					if(response.status === 503){
+						alert("Sorry, but that is an invalid Username or Password.  Please try again.");
+
+						$scope.username = "";
+						$scope.password = "";
+					}
+				}
+
+			}
+		};
+	});
+
+
+
 
 	/* App Controller
 	----------------------------------------------------*/
@@ -225,38 +290,14 @@ Date.prototype.timeNow = function () {
 
 		$scope.App = {};
 
-		//called on login and uses the auth service
-		$scope.login = function(){
-			var validUser = angular.isDefined($scope.username), auth,
-				validPass = angular.isDefined($scope.password);
 
-			if(!validUser){
-				$("#username").addClass("error").attr("placeholder", "Required");
-			}
-
-			if(!validPass){
-				$("#pass").addClass("error").attr("placeholder", "Required");
-			}
-
-			if(validUser && validPass){
-				apiService.auth($scope.username, $scope.password)
-					.then(function(data){
-						setup(data);
-					});
-			}
-		};
-
-
-
-		function setup(response){
-			if(response.code === 200){
-				app.config.loggedin = true;
-				window.location.href = "#checkIn";
-
-				startAutoSave();
-				checkStorage();
-			}
-		}
+		//Demo Controller Array for better formatting
+		$scope.demos = [
+			{label: "Rubber Hose Demo", value: "Rubber Hose Demo"},
+			{label: "Dispenser Demo", value: "Dispenser Demo"},
+			{label: "Drip Control Demo", value: "Drip Control Demo"},
+			{label: "Strength Test Demo", value: "Strength Test Demo"}
+		];
 
 
 		//sets the default date and time for the checkin and checkout
@@ -283,14 +324,12 @@ Date.prototype.timeNow = function () {
 			price: "",
 			demoLocation: "",
 			otherLocation: "",
-
 			//checkout
 			managerName: "",
 			managerReaction: "",
 			insights: "",
 			pics: "",
 			timeOut: "",
-
 			//client interactions
 			interactions: []
 		};
@@ -299,7 +338,7 @@ Date.prototype.timeNow = function () {
 		//Interaction itteration
 		$scope.addInteractions = function(){
 			$scope.App.interactions.push({
-				type: $scope.type,
+				type: $scope.type.value,
 				familiar: $scope.familiar,
 				krazyGlue: $scope.krazyGlue,
 				gorillaGlue: $scope.gorillaGlue,
@@ -332,12 +371,12 @@ Date.prototype.timeNow = function () {
 
 		
 		//Checks localstorage to see if the user has a saved report
-		function checkStorage(){
-			var lastVersion, items, touches = [];
+		app.checkStorage = function(){
+			var lastVersion, items, i;
 
 			if(window.location.hash === "#checkIn"){
 				if(window.localStorage.length === 1 && useSaved === false && showOnce === 0){
-					useSaved = window.confirm("Welcome back, friend! Hey, looks like you have 1 autosaved report. Do you want to use it or start with a fresh report?");
+					useSaved = window.confirm("Welcome back, friend! Hey, it looks like you have 1 autosaved report. Do you want to use it or start with a fresh report?");
 
 					//If the person said yes, populate form from saved version in local storage
 					if(useSaved === true){
@@ -352,26 +391,23 @@ Date.prototype.timeNow = function () {
 							}
 						}
 
-						for (var i = lastVersion["interactions"].length - 1; i >= 0; i--) {
+						//itterates though the saved interactions and pushes them to the scope
+						for (i = lastVersion["interactions"].length - 1; i >= 0; i -= 1) {
 							$scope.App.interactions.push(lastVersion["interactions"][i]);
 						}
-
-						console.log($scope.App.interactions);
-
-
 					}
 
 					showOnce = 1;
 				}
 			}
-		}
+		};
 
 
 
 
 		/* Auto Saves every 60 secons via the storage service
 		----------------------------------------------------------------*/
-		function startAutoSave(){
+		app.startAutoSave = function(){
 			autoSave = setInterval(function(){
 				var currentlySaved = locStorage.get(),
 					scopeStr = $scope.App;
@@ -385,7 +421,7 @@ Date.prototype.timeNow = function () {
 				
 				app.showSavedMessage();
 			}, 60000);
-		}
+		};
 
 
 
@@ -418,7 +454,7 @@ Date.prototype.timeNow = function () {
 		----------------------------------------------------------------*/
 		$(window)
 			.on("hashchange", $scope.setCheckOut)
-			.on("hashchange", checkStorage);
+			.on("hashchange", app.checkStorage);
 
 
 	});
