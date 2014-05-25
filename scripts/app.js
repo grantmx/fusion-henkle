@@ -148,7 +148,9 @@ Date.prototype.timeNow = function () {
 
 		//gets the fusionHenkle object
 		this.get = function(){
-			return window.localStorage["fusionHenkle"];
+			var itemStored = window.localStorage["fusionHenkle"];
+
+			return (itemStored === undefined) ? 0 : itemStored;
 		};
 
 		//removes the saved object
@@ -219,8 +221,9 @@ Date.prototype.timeNow = function () {
 	/* App Controller
 	----------------------------------------------------*/
 	fusionApp.controller("FusionAppController", function ($scope, apiService, locStorage, $q, urlBuilder){
-		var count = 1, autoSave;
+		var count = 1, autoSave, useSaved = false, showOnce = 0;
 
+		$scope.App = {};
 
 		//called on login and uses the auth service
 		$scope.login = function(){
@@ -267,18 +270,10 @@ Date.prototype.timeNow = function () {
 		};
 
 
-		//demo model.  this may not be needed any longer
-		$scope.demos = [
-			{label: "Rubber Hose Demo", value: "Rubber Hose"},
-			{label: "Dispenser Demo", value: "Dispenser"},
-			{label: "Drip Control Demo", value: "Drip Control"},
-			{label: "Strength Test Demo", value: "Strength Test"}
-		];
-
-
 		/* Main App Model Data
 		----------------------------------------*/
 		$scope.App = {
+			title: "Fusion-Henkle",
 			//checkin
 			staffid: "",
 			storeNumber: "",
@@ -294,19 +289,17 @@ Date.prototype.timeNow = function () {
 			managerReaction: "",
 			insights: "",
 			pics: "",
-			timeOut: ""
+			timeOut: "",
+
+			//client interactions
+			interactions: []
 		};
-
-		$scope.App.title = "Fusion-Henkle"
-
-		//Interaction parent
-		$scope.App.interactions = [];
 
 
 		//Interaction itteration
 		$scope.addInteractions = function(){
 			$scope.App.interactions.push({
-				type: $scope.type.value,
+				type: $scope.type,
 				familiar: $scope.familiar,
 				krazyGlue: $scope.krazyGlue,
 				gorillaGlue: $scope.gorillaGlue,
@@ -337,14 +330,42 @@ Date.prototype.timeNow = function () {
 			}
 		};
 
-
+		
+		//Checks localstorage to see if the user has a saved report
 		function checkStorage(){
+			var lastVersion, items, touches = [];
+
 			if(window.location.hash === "#checkIn"){
-				if(window.localStorage.length === 1){
-					$("#popupDialog").popup();
+				if(window.localStorage.length === 1 && useSaved === false && showOnce === 0){
+					useSaved = window.confirm("Welcome back, friend! Hey, looks like you have 1 autosaved report. Do you want to use it or start with a fresh report?");
+
+					//If the person said yes, populate form from saved version in local storage
+					if(useSaved === true){
+						lastVersion = locStorage.get();
+
+						lastVersion = $.parseJSON(lastVersion);
+
+						//pushes saved items to the scope except for interactions
+						for(items in lastVersion){
+							if(items !== "interactions"){
+								$scope.App[items] = lastVersion[items];
+							}
+						}
+
+						for (var i = lastVersion["interactions"].length - 1; i >= 0; i--) {
+							$scope.App.interactions.push(lastVersion["interactions"][i]);
+						}
+
+						console.log($scope.App.interactions);
+
+
+					}
+
+					showOnce = 1;
 				}
 			}
 		}
+
 
 
 
@@ -352,7 +373,16 @@ Date.prototype.timeNow = function () {
 		----------------------------------------------------------------*/
 		function startAutoSave(){
 			autoSave = setInterval(function(){
-				locStorage.save(JSON.stringify($scope.App));
+				var currentlySaved = locStorage.get(),
+					scopeStr = $scope.App;
+
+				scopeStr = JSON.stringify(scopeStr);
+
+				//if what is in local storage is smaller than what is currently in the form or empty, save what is in the form, otherwise dont overwrite
+				if(currentlySaved.length <= scopeStr.length || currentlySaved === 0){
+					locStorage.save(scopeStr);
+				}
+				
 				app.showSavedMessage();
 			}, 60000);
 		}
@@ -366,7 +396,19 @@ Date.prototype.timeNow = function () {
 
 			apiService.submit(dataUrl)
 				.then(function(data){
-					alert("success");
+					alert("Whoot! Congrats! Your report submitted succesfully!");
+
+					//delete saved report in local storage
+					locStorage.delete();
+
+					//stop the auto save
+					clearInterval(autoSave);
+
+					//log the user out
+					app.config.loggedin = false;
+
+					//refresh the browser
+					window.location.reload(forcedReload);
 				});
 		};
 

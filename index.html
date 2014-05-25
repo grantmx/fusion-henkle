@@ -49,10 +49,10 @@
 			<fieldset>
 				<div class="ui-grid-a">
 					<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="username">Username</label></div></div>
-					<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="username" value="grantmx" id="username" ng-model="username" placeholder=""/></div></div>
+					<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="text" name="username" id="username" ng-model="username" placeholder=""/></div></div>
 
 					<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="pass">Password</label></div></div>
-					<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="password" name="password" id="pass" value="malaka" ng-model="password" placeholder=""/></div></div>
+					<div class="ui-block-b"><div class="ui-bar ui-bar-a row"><input type="password" name="password" id="pass" ng-model="password" placeholder=""/></div></div>
 				</div>
 			</fieldset>
 
@@ -107,19 +107,6 @@
 				</fieldset>
 				
 
-			<div data-role="popup" id="popupDialog" data-overlay-theme="a" data-dismissible="false" style="max-width:400px;">
-				<div data-role="header" data-theme="a">
-					<h1>Delete Page?</h1>
-				</div>
-
-				<div role="main" class="ui-content">
-					<h3 class="ui-title">Are you sure you want to delete this page?</h3>
-					<p>This action cannot be undone.</p>
-					<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
-					<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow">Delete</a>
-				</div>
-			</div>
-
 			<div data-role="footer" data-position="fixed" id="footer">
 				<div data-role="navbar">
 					<ul class="footer-links">
@@ -145,7 +132,7 @@
 				
 			<fieldset>
 				<ol class="report-list">
-					<li ng-repeat="demo in App.interactions">{{demo.type}}: {{demo.date}} @ {{demo.time}}</li>
+					<li ng-repeat="demo in App.interactions track by $id($index)">{{demo.type}}: {{demo.date}} @ {{demo.time}}</li>
 				</ol>
 			</fieldset>
 
@@ -178,7 +165,7 @@
 					<div class="ui-grid-a">
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="type">Type of Demo</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-							<select name="type" id="type" ng-model="type" ng-model="App.demo">
+							<select name="type" id="type" ng-model="type">
 								<option selected></option>
 								<option value="table">Table Setup</option>
 								<option value="display_demo_start">Display (start of demo)</option>
@@ -286,12 +273,6 @@
 					</ul>
 				</div>
 			</div><!-- /navbar -->
-		</div>
-
-	
-		<!-- popups -->
-		<div id="overlay" data-role="popup" data-overlay-theme="a" class="ui-content" style="display:none">
-			<p>I have a <code>data-overlay-theme="a"</code> set on me</p>
 		</div>
 
 	</form>
