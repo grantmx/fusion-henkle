@@ -13,14 +13,14 @@
 
 
 /* ---------------------------------------
-	Global Configurations
+	Global Settings
 -----------------------------------------*/
 
-//namespace
+//Global Namespace
 var app = app || {};
 
 
-//configs
+//Global Configurations
 app.config = {
 	url: "http://appmanagr.net/mobile/index.php/api/rest",
 	type: "json?",
@@ -30,7 +30,14 @@ app.config = {
 		create: "create_entry",
 		read: "read_entry"
 	},
-	channel: "interactions"
+	channel: "interactions",
+	messages: {
+		required: "Required Field!",
+		use_last_saved: "Welcome back, friend! Hey, it looks like you have 1 autosaved report. Do you want to use it or start with a fresh report?",
+		login_error: "Sorry, but that is an invalid Username or Password.  Please try again.",
+		checkout_confirm: "Are you sure you are ready to checkout?  Your checkout time will be autoset and cannot be undone",
+		submit_success: "Whoot! Congrats! Your report submitted succesfully!"
+	}
 };
 
 
@@ -201,7 +208,7 @@ Date.prototype.timeNow = function () {
 
 		//URL constructor function
 		this.construct = function(formData){
-			data += "&data[channel_name]=interactions";
+			data += "&data[channel_name]="+ app.config.channel;
 			data += "&data[site_id]=1";
 
 
@@ -248,7 +255,8 @@ Date.prototype.timeNow = function () {
 			restrict: 'AE',
 			template: '<a href="#" class="ui-btn btn">Login</a>',
 			link: function(scope, element) {
-				var $scope = scope.$parent;
+				var $scope = scope.$parent,
+					config = app.config;
 
 				//called on login and uses the auth service
 				element.click(function(){
@@ -256,11 +264,11 @@ Date.prototype.timeNow = function () {
 						validPass = angular.isDefined($scope.password);
 
 					if(!validUser){
-						$("#username").attr("placeholder", "Required!");
+						$("#username").attr("placeholder", config.messages.required);
 					}
 
 					if(!validPass){
-						$("#pass").attr("placeholder", "Required!");
+						$("#pass").attr("placeholder", config.messages.required);
 					}
 
 					if(validUser && validPass){
@@ -290,7 +298,7 @@ Date.prototype.timeNow = function () {
 				//displays the error message on the login page when there was a problem
 				function displayErrorMessage (response){
 					if(response.status === 503){
-						alert("Sorry, but that is an invalid Username or Password.  Please try again.");
+						alert(config.messages.login_error);
 
 						$scope.username = "";
 						$scope.password = "";
@@ -307,7 +315,10 @@ Date.prototype.timeNow = function () {
 	/* App Controller
 	----------------------------------------------------*/
 	fusionApp.controller("FusionAppController", function ($scope, apiService, locStorage, $q, urlBuilder){
-		var count = 1, autoSave, useSaved = false, showOnce = 0;
+		var count = 1, autoSave,
+			useSaved = false,
+			showOnce = 0,
+			config = app.config;
 
 		$scope.App = {};
 
@@ -385,7 +396,7 @@ Date.prototype.timeNow = function () {
 
 			if(window.location.hash === "#checkOut"){
 				time = $scope.setCheckInTime(true, false);
-				checkoutCheck = window.confirm("Are you sure you are ready to checkout?  Your checkout time will be autoset and cannot be undone");
+				checkoutCheck = window.confirm(config.messages.checkout_confirm);
 			}
 
 			//make sure its only setting once
@@ -408,7 +419,7 @@ Date.prototype.timeNow = function () {
 
 			if(window.location.hash === "#checkIn"){
 				if(window.localStorage.length === 1 && useSaved === false && showOnce === 0){
-					useSaved = window.confirm("Welcome back, friend! Hey, it looks like you have 1 autosaved report. Do you want to use it or start with a fresh report?");
+					useSaved = window.confirm(config.messages.use_last_saved);
 
 					//If the person said yes, populate form from saved version in local storage
 					if(useSaved === true){
@@ -464,7 +475,7 @@ Date.prototype.timeNow = function () {
 
 			apiService.submit(dataUrl)
 				.then(function(data){
-					alert("Whoot! Congrats! Your report submitted succesfully!");
+					alert(config.messages.submit_success);
 
 					//delete saved report in local storage
 					locStorage.delete();
