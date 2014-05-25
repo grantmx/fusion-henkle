@@ -1,5 +1,15 @@
-
-
+/*===============================================================================================================
+* Fusion Henkle Customer Interactions App
+*
+*	Purpose:
+*		- Mobile App for associates when interacting with Custoemrs
+*
+*	Dependencies:
+*		- Data: Submits via REST api to Appmanagr.net
+*		- Libraries: AngularJS 1.2.6, jQuery 1.10.2, jQuery Mobile 1.4.2
+*
+*	Originally written by: Marshall Grant
+* =================================================================================================================*/
 
 
 /* ---------------------------------------
@@ -8,6 +18,7 @@
 
 //namespace
 var app = app || {};
+
 
 //configs
 app.config = {
@@ -69,6 +80,16 @@ Date.prototype.timeNow = function () {
 	};
 
 
+	//browser refresh
+	app.browserRefresh = function(){
+		var refreshURL = window.location.href;
+		refreshURL = x.split("#");
+		refreshURL = x[0];
+
+		window.location.href = refreshURL;
+	};
+
+
 	/* Show Hide Other Field
 	-----------------------------------------*/
 	function showHideOther(){
@@ -80,7 +101,7 @@ Date.prototype.timeNow = function () {
 
 
 	/* resets the Customer Interaction form's UI
-	-----------------------------------------*/
+	-----------------------------------------------*/
 	function resetForm(){
 		$("input.interact").siblings("label").removeClass("ui-checkbox-on").addClass("ui-checkbox-off");
 		$("#type").siblings('span').html("&nbsp;");
@@ -132,7 +153,7 @@ Date.prototype.timeNow = function () {
 
 				//creates a new record in the backend
 				submit: function(data, promise){
-					serviceURL = config.url +"/"+ config.methods.create +"/"+ config.type + authData +"&"+ data;
+					serviceURL = config.url +"/"+ config.methods.create +"/"+ config.type + authData + data;
 
 					promise = $http.get(serviceURL).then(function (response){ return response.data; });
 
@@ -180,14 +201,14 @@ Date.prototype.timeNow = function () {
 
 		//URL constructor function
 		this.construct = function(formData){
-			data += "data[channel_name]=interactions&";
-			data += "data[site_id]=1&";
+			data += "&data[channel_name]=interactions";
+			data += "&data[site_id]=1";
 
 
 			//adds all the fields except for interactions
 			angular.forEach(formData, function (value, key) {
 				if(key !== "interactions"){
-					data += "data["+ key +"]="+ (value !== "" ? value : 0) +"&";
+					data += "&data["+ key +"]="+ (value !== "" ? value : 0);
 				}
 			});
 
@@ -231,7 +252,7 @@ Date.prototype.timeNow = function () {
 
 				//called on login and uses the auth service
 				element.click(function(){
-					var validUser = angular.isDefined($scope.username), auth,
+					var validUser = angular.isDefined($scope.username),
 						validPass = angular.isDefined($scope.password);
 
 					if(!validUser){
@@ -290,7 +311,6 @@ Date.prototype.timeNow = function () {
 
 		$scope.App = {};
 
-
 		//Demo Controller Array for better formatting
 		$scope.demos = [
 			{label: "Rubber Hose Demo", value: "Rubber Hose Demo"},
@@ -309,6 +329,7 @@ Date.prototype.timeNow = function () {
 			if(date){ return nowDate; }
 			if(date && time){ return nowDate +" "+ nowTime; }
 		};
+
 
 
 		/* Main App Model Data
@@ -356,18 +377,29 @@ Date.prototype.timeNow = function () {
 		};
 
 
+
 		/* sets the checkout time on the checkout hash
 		----------------------------------------------------------------*/
 		$scope.setCheckOut = function(){
-			var time = (window.location.hash === "#checkOut") ? $scope.setCheckInTime(true, false) : "";
+			var time, checkoutCheck;
+
+			if(window.location.hash === "#checkOut"){
+				time = $scope.setCheckInTime(true, false);
+				checkoutCheck = window.confirm("Are you sure you are ready to checkout?  Your checkout time will be autoset and cannot be undone");
+			}
 
 			//make sure its only setting once
-			if(count === 1 && Boolean(time)){
+			if(count === 1 && Boolean(time) && checkoutCheck === true){
 				$scope.App.timeOut = time;
 				document.getElementById("timeOut").value = time; //for some reason angular isnt taking the inital binding, but on second click it will, so I have to update it manually.
 				count += 1;
 			}
+
+			if(checkoutCheck === false){
+				window.location.href = "#checkIn";
+			}
 		};
+
 
 		
 		//Checks localstorage to see if the user has a saved report
@@ -444,10 +476,9 @@ Date.prototype.timeNow = function () {
 					app.config.loggedin = false;
 
 					//refresh the browser
-					window.location.reload(forcedReload);
+					window.location.href = "#login";
 				});
 		};
-
 
 
 		/* listners
@@ -455,7 +486,6 @@ Date.prototype.timeNow = function () {
 		$(window)
 			.on("hashchange", $scope.setCheckOut)
 			.on("hashchange", app.checkStorage);
-
 
 	});
 
