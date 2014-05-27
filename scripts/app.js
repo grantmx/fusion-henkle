@@ -62,6 +62,10 @@ Date.prototype.timeNow = function () {
 -------------------------------------------------------*/
 !function (app, $){
 
+	//run add to home screen prompt
+	window.addToHomescreen();
+
+
 	//MOBILE: scroll past the nav bar to hide
 	app.broswerScrollTo = function () {
 		return /mobile/i.test(navigator.userAgent) && !location.hash && setTimeout(function () {
@@ -73,7 +77,7 @@ Date.prototype.timeNow = function () {
 	//checks to see if you are in a session.  if not you will be redirected to the login screen
 	app.loginCheck = function(){
 		if(!app.config.loggedin){
-			window.location.href = "#login";
+			//window.location.href = "#login";
 		}
 	}();
 
@@ -90,10 +94,18 @@ Date.prototype.timeNow = function () {
 	//browser refresh
 	app.browserRefresh = function(){
 		var refreshURL = window.location.href;
-		refreshURL = x.split("#");
-		refreshURL = x[0];
+		refreshURL = refreshURL.split("#");
+		refreshURL = refreshURL[0];
 
 		window.location.href = refreshURL;
+	};
+
+
+	app.ajaxLoading = function(yes){
+		var where = (window.location.hash === "") ? "#login" : window.location.hash,
+			what = '<div class="ajax-loading"><img src="http://appmanagr.net/mobile/apps/fusion-henkle/assets/app/assets/ajax-loader.gif"></div>';
+
+		return (yes) ? $(where).append(what) : $(".ajax-loading").remove();
 	};
 
 
@@ -210,7 +222,7 @@ Date.prototype.timeNow = function () {
 		this.construct = function(formData){
 			data += "&data[channel_name]="+ app.config.channel;
 			data += "&data[site_id]=1";
-
+			data += "&data[status]=open";
 
 			//adds all the fields except for interactions
 			angular.forEach(formData, function (value, key) {
@@ -219,9 +231,8 @@ Date.prototype.timeNow = function () {
 				}
 			});
 
-
 			//build interactions objects
-			interactionsData = (function(){
+			interactionsData = (function (formData){
 				var i, row = "", customers = formData.interactions.length;
 
 				for (i = customers - 1; i >= 0; i -= 1) {
@@ -236,7 +247,7 @@ Date.prototype.timeNow = function () {
 
 				return row;
 
-			}());
+			}(formData));
 
 			data += interactionsData;
 
@@ -272,13 +283,10 @@ Date.prototype.timeNow = function () {
 					}
 
 					if(validUser && validPass){
-						apiService.auth($scope.username, $scope.password)
-							.then(function (data){
-								setup(data);
+						app.ajaxLoading(true);
 
-							}, function (data){
-								displayErrorMessage(data);
-							});
+						apiService.auth($scope.username, $scope.password)
+							.then(setup, displayErrorMessage);
 					}
 				});
 
@@ -298,8 +306,8 @@ Date.prototype.timeNow = function () {
 				//displays the error message on the login page when there was a problem
 				function displayErrorMessage (response){
 					if(response.status === 503){
+						app.ajaxLoading(false);
 						alert(config.messages.login_error);
-
 						$scope.username = "";
 						$scope.password = "";
 					}
@@ -417,32 +425,31 @@ Date.prototype.timeNow = function () {
 		app.checkStorage = function(){
 			var lastVersion, items, i;
 
-			if(window.location.hash === "#checkIn"){
-				if(window.localStorage.length === 1 && useSaved === false && showOnce === 0){
-					useSaved = window.confirm(config.messages.use_last_saved);
+			if(window.localStorage.length === 1 && useSaved === false && showOnce === 0){
+				useSaved = window.confirm(config.messages.use_last_saved);
 
-					//If the person said yes, populate form from saved version in local storage
-					if(useSaved === true){
-						lastVersion = locStorage.get();
+				//If the person said yes, populate form from saved version in local storage
+				if(useSaved === true){
+					lastVersion = locStorage.get();
 
-						lastVersion = $.parseJSON(lastVersion);
+					lastVersion = $.parseJSON(lastVersion);
 
-						//pushes saved items to the scope except for interactions
-						for(items in lastVersion){
-							if(items !== "interactions"){
-								$scope.App[items] = lastVersion[items];
-							}
-						}
-
-						//itterates though the saved interactions and pushes them to the scope
-						for (i = lastVersion["interactions"].length - 1; i >= 0; i -= 1) {
-							$scope.App.interactions.push(lastVersion["interactions"][i]);
+					//pushes saved items to the scope except for interactions
+					for(items in lastVersion){
+						if(items !== "interactions"){
+							$scope.App[items] = lastVersion[items];
 						}
 					}
 
-					showOnce = 1;
+					//itterates though the saved interactions and pushes them to the scope
+					for (i = lastVersion["interactions"].length - 1; i >= 0; i -= 1) {
+						$scope.App.interactions.push(lastVersion["interactions"][i]);
+					}
 				}
+
+				showOnce = 1;
 			}
+			
 		};
 
 
@@ -467,14 +474,47 @@ Date.prototype.timeNow = function () {
 		};
 
 
+		//resets all form fields for the whole app
+		$scope.resetFields = function(){
+			$scope.username = "";
+			$scope.password = "";
+			//checkin
+			$scope.App.staffid = "";
+			$scope.App.storeNumber = "";
+			$scope.App.demoDate = "";
+			$scope.App.timeIn = "";
+			$scope.App.inventory = "";
+			$scope.App.price = "";
+			$scope.App.demoLocation = "";
+			$scope.App.otherLocation = "";
+			//checkout
+			$scope.App.managerName = "";
+			$scope.App.managerReaction = "";
+			$scope.App.insights = "";
+			$scope.App.pics = "";
+			$scope.App.timeOut = "";
+			//client interactions
+			$scope.App.interactions = [];
+
+			$scope.type = "";
+			$scope.familiar = false;
+			$scope.krazyGlue = false;
+			$scope.gorillaGlue = false;
+			$scope.comments = "";
+		};
+
 
 		/* Build the data URL and Submit
 		----------------------------------------------------------------*/
 		$scope.submitReport = function(){
 			var dataUrl = urlBuilder.construct($scope.App);
 
+			app.ajaxLoading(true);
+
 			apiService.submit(dataUrl)
 				.then(function(data){
+					app.ajaxLoading(false);
+
 					alert(config.messages.submit_success);
 
 					//delete saved report in local storage
@@ -486,6 +526,9 @@ Date.prototype.timeNow = function () {
 					//log the user out
 					app.config.loggedin = false;
 
+					//clear all fields
+					$scope.resetFields();
+
 					//refresh the browser
 					window.location.href = "#login";
 				});
@@ -495,8 +538,7 @@ Date.prototype.timeNow = function () {
 		/* listners
 		----------------------------------------------------------------*/
 		$(window)
-			.on("hashchange", $scope.setCheckOut)
-			.on("hashchange", app.checkStorage);
+			.on("hashchange", $scope.setCheckOut);
 
 	});
 

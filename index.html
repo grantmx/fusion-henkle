@@ -18,23 +18,26 @@
 <link rel="stylesheet" href="fonts/style.css" />
 <link rel="stylesheet" type="text/css" href="styles/app.css">
 
-<!-- iPhone (Retina) -->
-<link href="assets/phone-4-startup.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
-<!-- iPhone 5 -->
-<link href="http://www.example.com/mobile/images/apple-startup-iPhone-Tall-RETINA.jpg"  media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
-<!-- iPad Portrait -->
-<link href="http://www.example.com/mobile/images/apple-startup-iPad-Portrait.jpg" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)" rel="apple-touch-startup-image">
-<!-- iPad Landscape -->
-<link href="http://www.example.com/mobile/images/apple-startup-iPad-Landscape.jpg" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)" rel="apple-touch-startup-image">
-<!-- iPad Portrait (Retina) -->
-<link href="http://www.example.com/mobile/images/apple-startup-iPad-RETINA-Portrait.jpg" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
-<!-- iPad Landscape (Retina) -->
-<link href="http://www.example.com/mobile/images/apple-startup-iPad-RETINA-Landscape.jpg" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+<!-- iPhone SPLASHSCREEN-->
+<link href="/mobile/apps/fusion-henkle/assets/apple-touch-startup-image-320x460.png" media="(device-width: 320px)" rel="apple-touch-startup-image">
+<!-- iPhone (Retina) SPLASHSCREEN-->
+<link href="/mobile/apps/fusion-henkle/assets/apple-touch-startup-image-640x920.png" media="(device-width: 320px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+<!-- iPad (portrait) SPLASHSCREEN-->
+<link href="/mobile/apps/fusion-henkle/assets/apple-touch-startup-image-768x1004.png" media="(device-width: 768px) and (orientation: portrait)" rel="apple-touch-startup-image">
+<!-- iPad (landscape) SPLASHSCREEN-->
+<link href="/mobile/apps/fusion-henkle/assets/apple-touch-startup-image-748x1024.png" media="(device-width: 768px) and (orientation: landscape)" rel="apple-touch-startup-image">
+<!-- iPad (Retina, portrait) SPLASHSCREEN-->
+<link href="/mobile/apps/fusion-henkle/assets/apple-touch-startup-image-1536x2008.png" media="(device-width: 1536px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+<!-- iPad (Retina, landscape) SPLASHSCREEN-->
+<link href="/mobile/apps/fusion-henkle/assets/apple-touch-startup-image-2048x1496.png" media="(device-width: 1536px)  and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
 
-<link rel="apple-touch-icon" href="touch-icon-iphone.png">
-<link rel="apple-touch-icon" sizes="76x76" href="touch-icon-ipad.png">
-<link rel="apple-touch-icon" sizes="120x120" href="assets/iphone-4-icon-retnia.png">
-<link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad-retina.png">
+<link rel="apple-touch-icon" href="/mobile/apps/fusion-henkle/assets/touch-icon-iphone.png"> <!-- 60x60-->
+<link rel="apple-touch-icon" sizes="76x76" href="/mobile/apps/fusion-henkle/assets/touch-icon-ipad.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/mobile/apps/fusion-henkle/assets/iphone-4-icon-retnia.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/mobile/apps/fusion-henkle/assets/touch-icon-ipad-retina.png">
+
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script> 
+<script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script> 
 </head>
 <body>
 		
@@ -57,6 +60,7 @@
 			</fieldset>
 
 			<div data-login class="login-cntr"></div>
+
 		</div>
 
 
@@ -259,7 +263,6 @@
 
 			<a class="ui-btn btn" href="" ng-click="submitReport()">Send My Report</a>
 
-
 			<div data-role="footer" data-position="fixed" id="footer">
 				<div data-role="navbar">
 					<ul class="footer-links">
@@ -269,12 +272,12 @@
 					</ul>
 				</div>
 			</div><!-- /navbar -->
+
 		</div>
 
 	</form>
 
-<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script> 
-<script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script> 
+
 <script type="text/javascript" src="scripts/angular.1.2.16.min.js"></script>
 <script type="text/javascript" src="scripts/addtohomescreen.js"></script>
 

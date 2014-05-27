@@ -1,5 +1,8 @@
 html, body *{text-shadow:none;}
 
+.ajax-loading{background-color: rgba(0,0,0, 0.7); position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1001}
+.ajax-loading img{position: absolute; top:50%; left: 50%; margin-top:-23px; margin-left: -23px}
+
 .hide{display: none; visibility: hidden;}
 .align-center{margin:0 auto;}
 .center{text-align: center}
