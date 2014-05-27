@@ -36,7 +36,8 @@ app.config = {
 		use_last_saved: "Welcome back, friend! Hey, it looks like you have 1 autosaved report. Do you want to use it or start with a fresh report?",
 		login_error: "Sorry, but that is an invalid Username or Password.  Please try again.",
 		checkout_confirm: "Are you sure you are ready to checkout?  Your checkout time will be autoset and cannot be undone",
-		submit_success: "Whoot! Congrats! Your report submitted succesfully!"
+		submit_success: "Whoot! Congrats! Your report submitted succesfully!",
+		checkout_already_set: "Hey, sorry!  You've already set your checkout time and this cannot be updated."
 	}
 };
 
@@ -77,7 +78,7 @@ Date.prototype.timeNow = function () {
 	//checks to see if you are in a session.  if not you will be redirected to the login screen
 	app.loginCheck = function(){
 		if(!app.config.loggedin){
-			//window.location.href = "#login";
+			window.location.href = "#login";
 		}
 	}();
 
@@ -103,7 +104,7 @@ Date.prototype.timeNow = function () {
 
 	app.ajaxLoading = function(yes){
 		var where = (window.location.hash === "") ? "#login" : window.location.hash,
-			what = '<div class="ajax-loading"><img src="http://appmanagr.net/mobile/apps/fusion-henkle/assets/app/assets/ajax-loader.gif"></div>';
+			what = '<div class="ajax-loading"><img src="http://appmanagr.net/mobile/apps/fusion-henkle/assets/ajax-loader.gif"></div>';
 
 		return (yes) ? $(where).append(what) : $(".ajax-loading").remove();
 	};
@@ -295,7 +296,10 @@ Date.prototype.timeNow = function () {
 				function setup (response){
 					if(response.code === 200){
 						app.config.loggedin = true;
+
 						window.location.href = "#checkIn";
+
+						app.ajaxLoading(false);
 
 						app.startAutoSave();
 						app.checkStorage();
@@ -307,7 +311,9 @@ Date.prototype.timeNow = function () {
 				function displayErrorMessage (response){
 					if(response.status === 503){
 						app.ajaxLoading(false);
+
 						alert(config.messages.login_error);
+
 						$scope.username = "";
 						$scope.password = "";
 					}
@@ -416,6 +422,10 @@ Date.prototype.timeNow = function () {
 
 			if(checkoutCheck === false){
 				window.location.href = "#checkIn";
+			}
+
+			if(angular.isDefined($scope.App.timeOut)){
+				window.alert(config.messages.checkout_already_set);
 			}
 		};
 
