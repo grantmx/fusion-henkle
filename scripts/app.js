@@ -79,7 +79,7 @@ Date.prototype.timeNow = function () {
 	//checks to see if you are in a session.  if not you will be redirected to the login screen
 	app.loginCheck = function(){
 		if(!app.config.loggedin){
-			//window.location.href = "#login";
+			window.location.href = "#login";
 		}
 	}();
 
