@@ -37,7 +37,8 @@ app.config = {
 		login_error: "Sorry, but that is an invalid Username or Password.  Please try again.",
 		checkout_confirm: "Are you sure you are ready to checkout?  Your checkout time will be autoset and cannot be undone",
 		submit_success: "Whoot! Congrats! Your report submitted succesfully!",
-		checkout_already_set: "Hey, sorry!  You've already set your checkout time and this cannot be updated."
+		checkout_already_set: "Hey, sorry!  You've already set your checkout time and this cannot be updated.",
+		havent_checked_in: "Sorry, but you need to fill out all the checkin fields."
 	}
 };
 
@@ -78,7 +79,7 @@ Date.prototype.timeNow = function () {
 	//checks to see if you are in a session.  if not you will be redirected to the login screen
 	app.loginCheck = function(){
 		if(!app.config.loggedin){
-			window.location.href = "#login";
+			//window.location.href = "#login";
 		}
 	}();
 
@@ -258,6 +259,41 @@ Date.prototype.timeNow = function () {
 
 
 
+	/* Check the user in and disable form
+	-----------------------------------------------*/
+	fusionApp.directive("checkInCheck", function (){
+		return {
+			scope: {},
+			restrict: "AC",
+			template: '<a href="" class="ui-btn btn" data-transition="slide" id="checkMeIn">Check Me In</a>',
+			link: function(scope, element){
+				var $scope = scope.$parent;
+
+				app.checkInConfirm = function(){
+					if($scope.App.staffid || $scope.App.storeNumber || $scope.App.inventory || $scope.App.price || $scope.App.demoLocation || $scope.App.otherLocation){
+						$("#checkIn").find("input").attr("readonly", true).end()
+							.find("select").selectmenu('disable');
+
+						element.replaceWith("<div class='green ui-btn btn'>Thanks!  You're all checked in.</div>");
+
+						$scope.App.checkedIn = true;
+
+					}else{
+						alert(app.config.messages.havent_checked_in);
+						window.location.href = "#checkIn";
+					}
+				
+				};
+
+				element.click(function (){
+					app.checkInConfirm();
+				});
+
+			}
+		};
+	});
+
+
 
 	/* Login Directive: sets login button and displays messages
 	----------------------------------------------------------------*/
@@ -421,11 +457,7 @@ Date.prototype.timeNow = function () {
 			}
 
 			if(checkoutCheck === false){
-				window.location.href = "#checkIn";
-			}
-
-			if(angular.isDefined($scope.App.timeOut)){
-				window.alert(config.messages.checkout_already_set);
+				window.location.href = "#report";
 			}
 		};
 

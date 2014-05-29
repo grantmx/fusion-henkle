@@ -12,7 +12,7 @@ html, body *{text-shadow:none;}
 .row.tall-row{height:60px}
 .row.xtall-row{height:100px}
 
-.submit{background-color: #2ecc71;}
+.submit, .ui-page-theme-a .ui-btn.btn.green{background-color: #2ecc71; color:#fff; cursor: default;}
 
 input[readonly]{color:#bbb;}
 input:focus{border: none; box-shadow: none; outline: none}
