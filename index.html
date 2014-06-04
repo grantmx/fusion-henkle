@@ -116,7 +116,7 @@
 				<div data-role="navbar">
 					<ul class="footer-links">
 						<li><a href="#checkIn" class="ui-btn-active"><i class="icon-arrow-down2"></i><br> Check In</a></li>
-						<li><a href="#report"><i class="icon-signup"></i><br> Interactions</a></li>
+						<li><a href="#report" data-transition="slide"><i class="icon-signup"></i><br> Interactions</a></li>
 						<li><a href="#checkOut" ng-click="setCheckOut()"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
 					</ul>
 				</div>
@@ -129,8 +129,8 @@
 
 		<div data-role="page" id="report">
 			<div data-role="header" data-position="fixed">
-				<h1>Interactions</h1>
-				<a href="#add" class="header-nav-item ui-btn-right"><i class="icon-plus"></i></a>
+				<h1>Interactions ({{App.numberOfInteractions && App.numberOfInteractions || "0" }})</h1>
+				<a href="#add" class="header-nav-item ui-btn-right" data-transition="slide"><i class="icon-plus"></i></a>
 			</div>
 
 			<p class="saved-message"></p>
@@ -141,7 +141,7 @@
 				</ol>
 			</fieldset>
 
-			<a href="#add" class="ui-btn btn">Add Interaction</a>
+			<a href="#add" class="ui-btn btn" data-transition="slide">Add Interaction</a>
 
 			<div data-role="footer" data-position="fixed" id="footer">
 				<div data-role="navbar">
@@ -160,7 +160,7 @@
 
 		<div data-role="page" id="add">
 			<div data-role="header" data-position="fixed">
-				<a href="#report" class="header-nav-item ui-btn-left"><i class="icon-chevron-left"></i></a>
+				<a href="#report" class="header-nav-item ui-btn-left" data-transition="slide" data-direction="reverse"><i class="icon-chevron-left"></i></a>
 				<h1>Report</h1>
 			</div>
 
@@ -201,13 +201,13 @@
 					</div><!-- /grid-a -->
 				</fieldset>
 						
-				<a href="#report" class="ui-btn btn" id="finish" ng-click="addInteractions()">Finish</a>
+				<a href="#report" class="ui-btn btn" id="finish" ng-click="addInteractions()" data-transition="slide" data-direction="reverse">Finish</a>
 				
 			<div data-role="footer" data-position="fixed" id="footer">
 				<div data-role="navbar">
 					<ul class="footer-links">
 						<li><a href="#checkIn"><i class="icon-arrow-down2"></i><br> Check In</a></li>
-						<li><a href="#report" class="ui-btn-active"><i class="icon-signup"></i><br> Interactions</a></li>
+						<li><a href="#report" class="ui-btn-active" data-transition="slide"><i class="icon-signup"></i><br> Interactions</a></li>
 						<li><a href="#checkOut" ng-click="setCheckOut()"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
 					</ul>
 				</div>
@@ -245,15 +245,35 @@
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row xtall-row"><label for="insights">Your Insights</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row xtall-row"><textarea type="text" name="insights" ng-model="App.insights" id="insights" placeholder=""></textarea></div></div>
 
-						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="pics" class="multiline">Took Pics Of...</label></div></div>
+						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="tablePics" class="multiline">Table Setup Pics</label></div></div>
 						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
-							<select name="pics" id="pics" ng-model="App.pics">
-								<option selected></option>
-								<option value="table">Table Setup</option>
-								<option value="display_demo_start">Display (start of demo)</option>
-								<option value="interaction">Consumer Interaction</option>
-								<option value="display_demo_end">Display (end of demo)</option>
-							</select>
+							<label>
+								<input type="checkbox" name="tablePics" class="interact" id="tablePics" ng-model="App.pics_of_table"> Yes
+							</label>
+						</div></div>
+
+
+						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="demoStart" class="multiline">Demo Start Pics</label></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
+							<label>
+								<input type="checkbox" name="demoStart" class="interact" id="demoStart" ng-model="App.pics_of_display_demo_start"> Yes
+							</label>
+						</div></div>
+
+
+						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="CustomerInteractionsPics" class="multiline">Interactions Pics</label></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
+							<label>
+								<input type="checkbox" name="CustomerInteractionsPics" class="interact" id="CustomerInteractionsPics" ng-model="App.pics_of_interaction"> Yes
+							</label>
+						</div></div>
+
+
+						<div class="ui-block-a"><div class="ui-bar ui-bar-a row tall-row"><label for="demoEnd" class="multiline">Demo End Pics</label></div></div>
+						<div class="ui-block-b"><div class="ui-bar ui-bar-a row tall-row">
+							<label>
+								<input type="checkbox" name="demoEnd" class="interact" id="demoEnd" ng-model="App.pics_of_display_demo_end"> Yes
+							</label>
 						</div></div>
 
 						<div class="ui-block-a"><div class="ui-bar ui-bar-a row"><label for="timeOut">Time Out</label></div></div>
@@ -268,7 +288,7 @@
 				<div data-role="navbar">
 					<ul class="footer-links">
 						<li><a href="#checkIn"><i class="icon-arrow-down2"></i><br> Check In</a></li>
-						<li><a href="#report"><i class="icon-signup"></i><br> Interactions</a></li>
+						<li><a href="#report" data-transition="slide" data-direction="reverse"><i class="icon-signup"></i><br> Interactions</a></li>
 						<li><a href="#checkOut" class="ui-btn-active" ng-click="setCheckOut()"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
 					</ul>
 				</div>
@@ -281,7 +301,6 @@
 
 <script type="text/javascript" src="scripts/angular.1.2.16.min.js"></script>
 <script type="text/javascript" src="scripts/addtohomescreen.js"></script>
-
 <script src="scripts/app.js" type="text/javascript"></script>
 </body>
 </html>

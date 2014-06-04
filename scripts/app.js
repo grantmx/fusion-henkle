@@ -38,7 +38,7 @@ app.config = {
 		checkout_confirm: "Are you sure you are ready to checkout?  Your checkout time will be autoset and cannot be undone",
 		submit_success: "Whoot! Congrats! Your report submitted succesfully!",
 		checkout_already_set: "Hey, sorry!  You've already set your checkout time and this cannot be updated.",
-		havent_checked_in: "Sorry, but you need to fill out all the checkin fields."
+		havent_checked_in: "Sorry, but you need to fill out all the check-in fields and hit, 'Check me in'."
 	}
 };
 
@@ -49,12 +49,12 @@ app.config = {
 
 // For todays date;
 Date.prototype.today = function () {
-	return((this.getDate() < 10) ? "0" : "") + (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth() + 1) + "-" + this.getDate() + "-" + this.getFullYear();
+	return( (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth() + 1) + "-" + ((this.getDate() < 10) ? "0" : "") + this.getDate()) + "-" + this.getFullYear();
 };
 
 // For the time now
 Date.prototype.timeNow = function () {
-	return((this.getHours() < 10) ? "0" : "") + ((this.getHours() > 12) ? (this.getHours() - 12) : this.getHours()) + ":" + ((this.getMinutes() < 10) ? "0" : "") + this.getMinutes() + ":" + ((this.getSeconds() < 10) ? "0" : "") + this.getSeconds() + ((this.getHours() > 12) ? ('PM') : 'AM');
+	return((this.getHours() < 10) ? "0" : "") + ((this.getHours() > 12) ? (this.getHours() - 12) : this.getHours()) + ":" + ((this.getMinutes() < 10) ? "0" : "") + this.getMinutes() + ":" + ((this.getSeconds() < 10) ? "0" : "") + this.getSeconds() + ((this.getHours() > 12) ? (' PM') : ' AM');
 };
 
 
@@ -89,17 +89,7 @@ Date.prototype.timeNow = function () {
 		var nowTime = new Date().timeNow(),
 			nowDate = new Date().today();
 
-		$("p.saved-message").text("Last saved " + nowDate +" at " + nowTime);
-	};
-
-
-	//browser refresh
-	app.browserRefresh = function(){
-		var refreshURL = window.location.href;
-		refreshURL = refreshURL.split("#");
-		refreshURL = refreshURL[0];
-
-		window.location.href = refreshURL;
+		$("p.saved-message").text("Last saved at " + nowTime);
 	};
 
 
@@ -121,19 +111,24 @@ Date.prototype.timeNow = function () {
 	}
 
 
-	/* resets the Customer Interaction form's UI
+	/* resets form's UI with context
 	-----------------------------------------------*/
-	function resetForm(){
-		$("input.interact").siblings("label").removeClass("ui-checkbox-on").addClass("ui-checkbox-off");
-		$("#type").siblings('span').html("&nbsp;");
-	}
+	app.resetForm = function(where){
+		$("input", where).siblings("label").removeClass("ui-checkbox-on").addClass("ui-checkbox-off");
+		$("select", where).siblings('span').html("&nbsp;");
+	};
 
+
+	//resets the interactions report
+	function resetReport(){
+		app.resetForm("#add");
+	}
 
 	/* Listners
 	-----------------------------------------*/
 	$(document)
 		.on("change", "#location", showHideOther)
-		.on("click", "#finish", resetForm);
+		.on("click", "#finish", resetReport);
 
 }(window.app, window.jQuery);
 
@@ -155,8 +150,8 @@ Date.prototype.timeNow = function () {
 	* create - appmanagr.net/mobile/index.php/api/rest/create_entry/json?auth[username]=grantmx&auth[password]=malaka&data[channel_name]=interactions&data[site_id]=1&data[title]=entryApi&data[interactions][rows][0][type]=1&data[interactions][rows][0][familiar]=1&data[interactions][rows][1][type]=2&data[interactions][rows][1][familiar]=2
 	---------------------------------------------------------------------------------------------------*/
 
-	fusionApp.service('apiService', function ($http, $q){
-		var serviceURL, response, authData,
+	fusionApp.service('apiService', ["$http", function ($http){
+		var serviceURL, authData,
 			config = app.config,
 			apiService = {
 
@@ -184,7 +179,7 @@ Date.prototype.timeNow = function () {
 
 		return apiService;
 
-	});
+	}]);
 
 
 
@@ -194,19 +189,19 @@ Date.prototype.timeNow = function () {
 
 		//saves the fusionHenkle object
 		this.save = function(data){
-			window.localStorage["fusionHenkle"] = data;
+			window.localStorage.fusionHenkle = data;
 			return "saved";
 		};
 
 		//gets the fusionHenkle object
 		this.get = function(){
-			var itemStored = window.localStorage["fusionHenkle"];
+			var itemStored = window.localStorage.fusionHenkle;
 			return (itemStored === undefined) ? 0 : itemStored;
 		};
 
 		//removes the saved object
 		this.delete = function(){
-			window.localStorage.removeItem("fusionHenkle");
+			window.localStorage.fusionHenkle = "";
 			return "deleted";
 		};
 		
@@ -259,45 +254,72 @@ Date.prototype.timeNow = function () {
 
 
 
-	/* Check the user in and disable form
-	-----------------------------------------------*/
-	fusionApp.directive("checkInCheck", function (){
+	/* Now service sets the current device date and time
+	--------------------------------------------------------*/
+	fusionApp.service('now', function(){
+		var nowTime = new Date().timeNow(),
+			nowDate = new Date().today();
+
 		return {
-			scope: {},
-			restrict: "AC",
-			template: '<a href="" class="ui-btn btn" data-transition="slide" id="checkMeIn">Check Me In</a>',
-			link: function(scope, element){
-				var $scope = scope.$parent;
+			getTime: function(){
+				return nowTime;
+			},
 
-				app.checkInConfirm = function(){
-					if($scope.App.staffid || $scope.App.storeNumber || $scope.App.inventory || $scope.App.price || $scope.App.demoLocation || $scope.App.otherLocation){
-						$("#checkIn").find("input").attr("readonly", true).end()
-							.find("select").selectmenu('disable');
+			getDate: function(){
+				return nowDate;
+			},
 
-						element.replaceWith("<div class='green ui-btn btn'>Thanks!  You're all checked in.</div>");
-
-						$scope.App.checkedIn = true;
-
-					}else{
-						alert(app.config.messages.havent_checked_in);
-						window.location.href = "#checkIn";
-					}
-				
-				};
-
-				element.click(function (){
-					app.checkInConfirm();
-				});
-
+			getTimeDate: function(){
+				return nowDate +" "+ nowTime;
 			}
 		};
 	});
 
 
 
+
+	/* Check the user in and disable form
+	-----------------------------------------------*/
+	fusionApp.directive("checkInCheck", ["$timeout", function ($timeout){
+		return {
+			scope: {},
+			restrict: "AC",
+			template: '<a href="" class="ui-btn btn" id="checkMeIn">Check Me In</a>',
+			link: function(scope, element){
+				var $scope = scope.$parent;
+
+				app.checkInConfirm = function(){
+					if($scope.App.staffid && $scope.App.storeNumber && $scope.App.inventory && $scope.App.price && $scope.App.demoLocation){
+						$("#checkIn").find("input").attr("readonly", true).end()
+							.find("select").selectmenu('disable');
+
+						element.replaceWith("<div class='green ui-btn btn'>Thanks!  You're all checked in.</div>");
+
+						$scope.checkedIn = true;
+
+						$timeout(function(){
+							window.location.href = "#report";
+						}, 1000);
+
+					}else{
+						window.alert(app.config.messages.havent_checked_in);
+					}
+				};
+
+				//bind to the element
+				element.click(function (){
+					app.checkInConfirm();
+				});
+
+			}
+		};
+	}]);
+
+
+
 	/* Login Directive: sets login button and displays messages
 	----------------------------------------------------------------*/
-	fusionApp.directive('login', function (apiService){
+	fusionApp.directive('login', ["apiService", function (apiService){
 		return {
 			scope: {},
 			restrict: 'AE',
@@ -322,8 +344,7 @@ Date.prototype.timeNow = function () {
 					if(validUser && validPass){
 						app.ajaxLoading(true);
 
-						apiService.auth($scope.username, $scope.password)
-							.then(setup, displayErrorMessage);
+						apiService.auth($scope.username, $scope.password).then(setup, displayErrorMessage);
 					}
 				});
 
@@ -337,8 +358,8 @@ Date.prototype.timeNow = function () {
 
 						app.ajaxLoading(false);
 
-						app.startAutoSave();
-						app.checkStorage();
+						$scope.startAutoSave();
+						$scope.checkStorage();
 					}
 				}
 
@@ -348,7 +369,7 @@ Date.prototype.timeNow = function () {
 					if(response.status === 503){
 						app.ajaxLoading(false);
 
-						alert(config.messages.login_error);
+						window.alert(config.messages.login_error);
 
 						$scope.username = "";
 						$scope.password = "";
@@ -357,20 +378,22 @@ Date.prototype.timeNow = function () {
 
 			}
 		};
-	});
+	}]);
 
 
 
 
 	/* App Controller
 	----------------------------------------------------*/
-	fusionApp.controller("FusionAppController", function ($scope, apiService, locStorage, $q, urlBuilder){
+	fusionApp.controller("FusionAppController", ["$scope", "apiService", "locStorage", "$q", "urlBuilder", "now", "$interval", function ($scope, apiService, locStorage, $q, urlBuilder, now, $interval){
 		var count = 1, autoSave,
 			useSaved = false,
 			showOnce = 0,
 			config = app.config;
 
 		$scope.App = {};
+
+		$scope.checkedIn = false;
 
 		//Demo Controller Array for better formatting
 		$scope.demos = [
@@ -380,19 +403,6 @@ Date.prototype.timeNow = function () {
 			{label: "Strength Test Demo", value: "Strength Test Demo"}
 		];
 
-
-		//sets the default date and time for the checkin and checkout
-		$scope.setCheckInTime = function (time, date) {
-			var nowTime = new Date().timeNow(),
-				nowDate = new Date().today();
-
-			if(time){ return nowTime; }
-			if(date){ return nowDate; }
-			if(date && time){ return nowDate +" "+ nowTime; }
-		};
-
-
-
 		/* Main App Model Data
 		----------------------------------------*/
 		$scope.App = {
@@ -400,8 +410,8 @@ Date.prototype.timeNow = function () {
 			//checkin
 			staffid: "",
 			storeNumber: "",
-			demoDate: $scope.setCheckInTime(false, true),
-			timeIn: $scope.setCheckInTime(true, false),
+			demoDate: now.getDate(),
+			timeIn: now.getTime(),
 			inventory: "",
 			price: "",
 			demoLocation: "",
@@ -410,14 +420,18 @@ Date.prototype.timeNow = function () {
 			managerName: "",
 			managerReaction: "",
 			insights: "",
-			pics: "",
+			pics_of_table: "",
+			pics_of_display_demo_start: "",
+			pics_of_interaction: "",
+			pics_of_display_demo_end: "",
 			timeOut: "",
 			//client interactions
-			interactions: []
+			interactions: [],
+			numberOfInteractions: ""
 		};
 
 
-		//Interaction itteration
+		//Interaction iteration
 		$scope.addInteractions = function(){
 			$scope.App.interactions.push({
 				type: $scope.type.value,
@@ -425,9 +439,11 @@ Date.prototype.timeNow = function () {
 				krazyGlue: $scope.krazyGlue,
 				gorillaGlue: $scope.gorillaGlue,
 				comments: $scope.comments,
-				date: $scope.setCheckInTime(false, true),
-				time: $scope.setCheckInTime(true, false),
+				date: now.getDate(),
+				time: now.getTime(),
 			});
+
+			$scope.App.numberOfInteractions = $scope.App.interactions.length;
 
 			//resets the form data
 			$scope.type = "";
@@ -445,7 +461,7 @@ Date.prototype.timeNow = function () {
 			var time, checkoutCheck;
 
 			if(window.location.hash === "#checkOut"){
-				time = $scope.setCheckInTime(true, false);
+				time = now.getTime();
 				checkoutCheck = window.confirm(config.messages.checkout_confirm);
 			}
 
@@ -464,10 +480,11 @@ Date.prototype.timeNow = function () {
 
 		
 		//Checks localstorage to see if the user has a saved report
-		app.checkStorage = function(){
-			var lastVersion, items, i;
+		$scope.checkStorage = function(){
+			var lastVersion, items, i,
+				storage = window.localStorage.fusionHenkle;
 
-			if(window.localStorage.length === 1 && useSaved === false && showOnce === 0){
+			if(storage !== "" && useSaved === false && showOnce === 0){
 				useSaved = window.confirm(config.messages.use_last_saved);
 
 				//If the person said yes, populate form from saved version in local storage
@@ -484,8 +501,8 @@ Date.prototype.timeNow = function () {
 					}
 
 					//itterates though the saved interactions and pushes them to the scope
-					for (i = lastVersion["interactions"].length - 1; i >= 0; i -= 1) {
-						$scope.App.interactions.push(lastVersion["interactions"][i]);
+					for (i = lastVersion.interactions.length - 1; i >= 0; i -= 1) {
+						$scope.App.interactions.push(lastVersion.interactions[i]);
 					}
 				}
 
@@ -495,12 +512,10 @@ Date.prototype.timeNow = function () {
 		};
 
 
-
-
 		/* Auto Saves every 60 secons via the storage service
 		----------------------------------------------------------------*/
-		app.startAutoSave = function(){
-			autoSave = setInterval(function(){
+		$scope.startAutoSave = function(){
+			autoSave = $interval(function(){
 				var currentlySaved = locStorage.get(),
 					scopeStr = $scope.App;
 
@@ -516,34 +531,16 @@ Date.prototype.timeNow = function () {
 		};
 
 
-		//resets all form fields for the whole app
-		$scope.resetFields = function(){
-			$scope.username = "";
-			$scope.password = "";
-			//checkin
-			$scope.App.staffid = "";
-			$scope.App.storeNumber = "";
-			$scope.App.demoDate = "";
-			$scope.App.timeIn = "";
-			$scope.App.inventory = "";
-			$scope.App.price = "";
-			$scope.App.demoLocation = "";
-			$scope.App.otherLocation = "";
-			//checkout
-			$scope.App.managerName = "";
-			$scope.App.managerReaction = "";
-			$scope.App.insights = "";
-			$scope.App.pics = "";
-			$scope.App.timeOut = "";
-			//client interactions
-			$scope.App.interactions = [];
 
-			$scope.type = "";
-			$scope.familiar = false;
-			$scope.krazyGlue = false;
-			$scope.gorillaGlue = false;
-			$scope.comments = "";
+		/* stops the Auto Save
+		----------------------------------------------------------------*/
+		$scope.stopAutoSave = function(){
+			if (angular.isDefined(autoSave)) {
+				$interval.cancel(autoSave);
+				autoSave = undefined;
+			}
 		};
+
 
 
 		/* Build the data URL and Submit
@@ -551,29 +548,34 @@ Date.prototype.timeNow = function () {
 		$scope.submitReport = function(){
 			var dataUrl = urlBuilder.construct($scope.App);
 
-			app.ajaxLoading(true);
+			if($scope.checkedIn){
+				app.ajaxLoading(true);
 
-			apiService.submit(dataUrl)
-				.then(function(data){
-					app.ajaxLoading(false);
+				apiService.submit(dataUrl)
+					.then(function(){
+						app.ajaxLoading(false);
 
-					alert(config.messages.submit_success);
+						window.alert(config.messages.submit_success);
 
-					//delete saved report in local storage
-					locStorage.delete();
+						//delete saved report in local storage
+						locStorage.delete();
 
-					//stop the auto save
-					clearInterval(autoSave);
+						//stop the auto save
+						$scope.stopAutoSave();
 
-					//log the user out
-					app.config.loggedin = false;
+						//reset form controls
+						app.resetForm("#checkOut, #checkIn");
 
-					//clear all fields
-					$scope.resetFields();
+						//log the user out
+						app.config.loggedin = false;
 
-					//refresh the browser
-					window.location.href = "#login";
-				});
+						//refresh the browser
+						window.location.href = "index.html";
+					});
+
+			}else{
+				app.checkInConfirm();
+			}
 		};
 
 
@@ -582,7 +584,7 @@ Date.prototype.timeNow = function () {
 		$(window)
 			.on("hashchange", $scope.setCheckOut);
 
-	});
+	}]);
 
 }(window.angular, window.app, window.jQuery);
 

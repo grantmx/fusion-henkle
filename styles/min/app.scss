@@ -1,0 +1,62 @@
+html, body *{text-shadow:none;}
+
+.ajax-loading{background-color: rgba(0,0,0, 0.7); position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1001}
+.ajax-loading img{position: absolute; top:50%; left: 50%; margin-top:-23px; margin-left: -23px}
+
+.hide{display: none; visibility: hidden;}
+.align-center{margin:0 auto;}
+.center{text-align: center}
+.yellow-txt{color: #ffe600;}
+
+.row{height: 50px}
+.row.tall-row{height:60px}
+.row.xtall-row{height:100px}
+
+.submit, .ui-page-theme-a .ui-btn.btn.green{background-color: #2ecc71; color:#fff; cursor: default;}
+
+input[readonly]{color:#bbb;}
+input:focus{border: none; box-shadow: none; outline: none}
+
+input[placeholder].error{color: #c0392b;}
+
+.report-list{margin:0;}
+.report-list li{/*border-bottom: 1px solid #ddd; */padding:15px 0;}
+
+.footer-links i{font-size: 30px}
+.saved-message{
+	text-align: center;
+	margin: 0;
+	margin-top: 15px;
+	font-size: 11px;
+	line-height: 11px;
+	height: 11px;
+	text-transform: uppercase;
+	color: #999;
+}
+
+/* JQM Overrides */
+.ui-page-theme-a .header-nav-item.ui-btn{background-color: #333; color: #ffe600; border:none; text-shadow:none;}
+.ui-header i{font-size: 16px}
+.ui-page-theme-a .ui-btn.ui-btn-active{background-color: #333; border-color: #333; text-shadow:0 1px 0 #000; color:#ffe600;}
+.ui-mobile fieldset{margin:15px; background-color: #fff; border-radius: 5px; box-shadow: 0 3px 5px #ccc;}
+.ui-mobile label{margin-top: 3%}
+.ui-page-theme-a .ui-btn.btn{margin: 15px; border-radius: 5px; background-color: #ddd; color: #555; text-transform: uppercase; text-shadow:none;}
+.ui-grid-a{border-radius: 5px;}
+.ui-overlay-a, .ui-page-theme-a{background-color: #f2f2f2}
+.ui-bar-a{background-color: #fff; border-left: none; border-right: none; border-top:none;}
+.ui-page-theme-a .ui-bar-inherit{background-color: #333; color:#ffe600; text-shadow:0 1px 0 #000; }
+.ui-input-text input, .ui-page-theme-a .ui-body-inherit, html .ui-bar-a .ui-body-inherit{border: none; background: none;}
+.ui-shadow-inset{ -webkit-box-shadow:none; box-shadow: none}
+.ui-page-theme-a .ui-slider-track .ui-btn-active, html .ui-bar-a .ui-slider-track .ui-btn-active{background-color: #555}
+
+/* Login Page*/
+.login-page.ui-page-theme-a{background-color: #333}
+.login-page.ui-page-theme-a fieldset{box-shadow: none}
+.login-page.ui-page-theme-a .ui-btn.btn{background-color: #444; color: #eee; border:none;}
+
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+	.ui-mobile label{margin-top: 15%}
+	.ui-mobile label.multiline{margin-top: 5%}
+}

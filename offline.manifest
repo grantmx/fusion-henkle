@@ -1,0 +1,23 @@
+CACHE MANIFEST
+# This is a comment.
+# Cache manifest version 1.0.8
+# If you change the version number in this comment,
+# the cache manifest is no longer byte-for-byte
+# identical.
+ 
+# scripts/angular.1.2.16.min.js
+# scripts/addtohomescreen.js
+# scripts/app.js
+# assets/fusion_logo.png
+
+NETWORK:
+# All URLs that start with the following lines
+# are whitelisted.
+
+# http://appmanagr.net/mobile/
+
+CACHE:
+# Additional items to cache.
+
+ 
+FALLBACK:
