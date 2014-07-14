@@ -33,12 +33,13 @@ app.config = {
 	channel: "interactions",
 	messages: {
 		required: "Required Field!",
-		use_last_saved: "Welcome back, friend! Hey, it looks like you have 1 autosaved report. Do you want to use it or start with a fresh report?",
+		use_last_saved: "Welcome back, friend! Hey, it looks like you have 1 autosaved report. Hit, OK to use it or hit Cancel to start with a fresh report?",
 		login_error: "Sorry, but that is an invalid Username or Password.  Please try again.",
 		checkout_confirm: "Are you sure you are ready to checkout?  Your checkout time will be autoset and cannot be undone",
 		submit_success: "Whoot! Congrats! Your report submitted succesfully!",
 		checkout_already_set: "Hey, sorry!  You've already set your checkout time and this cannot be updated.",
-		havent_checked_in: "Sorry, but you need to fill out all the check-in fields and hit, 'Check me in'."
+		havent_checked_in: "Sorry, but you need to fill out all the check-in fields and hit, 'Check me in'.",
+		not_saved: '<p class="alert alert-error">Report not saved. <a href="#notSaved">More &raquo;</a></p>'
 	}
 };
 
@@ -85,11 +86,12 @@ Date.prototype.timeNow = function () {
 
 
 	//Message to show at the top of the page when a save occurs
-	app.showSavedMessage = function(){
+	app.showSavedMessage = function(display){
 		var nowTime = new Date().timeNow(),
-			nowDate = new Date().today();
+			nowDate = new Date().today(),
+			message = (display) ? app.config.messages.not_saved : '<p class="alert alert-success">Last saved at '+ nowTime +'</p>';
 
-		$("p.saved-message").text("Last saved at " + nowTime);
+		$("div.saved-message").html(message);
 	};
 
 
@@ -124,11 +126,16 @@ Date.prototype.timeNow = function () {
 		app.resetForm("#add");
 	}
 
+	function setupApp(){
+		$("div.saved-message").html(app.config.messages.not_saved);
+	}
+
 	/* Listners
 	-----------------------------------------*/
 	$(document)
 		.on("change", "#location", showHideOther)
-		.on("click", "#finish", resetReport);
+		.on("click", "#finish", resetReport)
+		.on("ready", setupApp);
 
 }(window.app, window.jQuery);
 
@@ -156,11 +163,11 @@ Date.prototype.timeNow = function () {
 			apiService = {
 
 				//authroizes the user aginst the backend
-				auth: function(user, pass, promise){
+				auth: function(user, pass){
+					var promise;
+
 					authData = "auth[username]="+ user +"&auth[password]="+ pass;
-
 					serviceURL = config.url +"/"+ config.methods.auth +"/"+ config.type + authData;
-
 					promise = $http.get(serviceURL).then(function (response){ return response.data; });
 
 					return promise;
@@ -168,9 +175,10 @@ Date.prototype.timeNow = function () {
 
 
 				//creates a new record in the backend
-				submit: function(data, promise){
-					serviceURL = config.url +"/"+ config.methods.create +"/"+ config.type + authData + data;
+				submit: function(data){
+					var promise;
 
+					serviceURL = config.url +"/"+ config.methods.create +"/"+ config.type + authData + data;
 					promise = $http.get(serviceURL).then(function (response){ return response.data; });
 
 					return promise;
@@ -257,19 +265,20 @@ Date.prototype.timeNow = function () {
 	/* Now service sets the current device date and time
 	--------------------------------------------------------*/
 	fusionApp.service('now', function(){
-		var nowTime = new Date().timeNow(),
-			nowDate = new Date().today();
-
 		return {
 			getTime: function(){
+				var nowTime = new Date().timeNow();
 				return nowTime;
 			},
 
 			getDate: function(){
+				var nowDate = new Date().today();
 				return nowDate;
 			},
 
 			getTimeDate: function(){
+				var nowTime = new Date().timeNow(),
+					nowDate = new Date().today();
 				return nowDate +" "+ nowTime;
 			}
 		};
@@ -293,7 +302,7 @@ Date.prototype.timeNow = function () {
 						$("#checkIn").find("input").attr("readonly", true).end()
 							.find("select").selectmenu('disable');
 
-						element.replaceWith("<div class='green ui-btn btn'>Thanks!  You're all checked in.</div>");
+						element.replaceWith("<div class='green ui-btn btn'>Thanks! You're in!</div>");
 
 						$scope.checkedIn = true;
 
@@ -451,6 +460,8 @@ Date.prototype.timeNow = function () {
 			$scope.krazyGlue = false;
 			$scope.gorillaGlue = false;
 			$scope.comments = "";
+
+			$scope.saveReport();
 		};
 
 
@@ -516,21 +527,9 @@ Date.prototype.timeNow = function () {
 		----------------------------------------------------------------*/
 		$scope.startAutoSave = function(){
 			autoSave = $interval(function(){
-				var currentlySaved = locStorage.get(),
-					scopeStr = $scope.App;
-
-				scopeStr = JSON.stringify(scopeStr);
-
-				//if what is in local storage is smaller than what is currently in the form or empty, save what is in the form, otherwise dont overwrite
-				if(currentlySaved.length <= scopeStr.length || currentlySaved === 0){
-					locStorage.save(scopeStr);
-				}
-				
-				app.showSavedMessage();
-			}, 60000);
+				$scope.saveReport();
+			}, 30000, 0, true);
 		};
-
-
 
 		/* stops the Auto Save
 		----------------------------------------------------------------*/
@@ -540,6 +539,29 @@ Date.prototype.timeNow = function () {
 				autoSave = undefined;
 			}
 		};
+
+
+
+
+		/* packages and pushes the report to the device
+		------------------------------------------------ */
+		$scope.saveReport = function(){
+			var currentlySaved = locStorage.get(),
+				scopeStr = $scope.App;
+
+			scopeStr = JSON.stringify(scopeStr);
+
+			//if what is in local storage is smaller than what is currently in the form or empty, save what is in the form, otherwise dont overwrite
+			if(currentlySaved.length <= scopeStr.length || currentlySaved === 0){
+				locStorage.save(scopeStr);
+			}
+			
+			app.showSavedMessage();
+		};
+
+
+
+
 
 
 
@@ -558,7 +580,7 @@ Date.prototype.timeNow = function () {
 						window.alert(config.messages.submit_success);
 
 						//delete saved report in local storage
-						locStorage.delete();
+						//locStorage.delete();
 
 						//stop the auto save
 						$scope.stopAutoSave();

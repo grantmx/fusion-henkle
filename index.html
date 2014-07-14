@@ -71,7 +71,7 @@
 				<h1>Check In</h1>
 			</div>
 
-			<p class="saved-message"></p>
+			<div class="saved-message"></div>
 
 				<fieldset>
 					<div class="ui-grid-a">
@@ -127,13 +127,48 @@
 
 
 
+		<div data-role="page" id="notSaved">
+			<div data-role="header" data-position="fixed">
+				<a href="#checkIn" class="header-nav-item ui-btn-left" data-transition="slide" data-direction="reverse"><i class="icon-chevron-left"></i></a>
+				<h1>UnSaved Report</h1>
+			</div>
+
+			<div class="saved-message"></div>
+
+			<div role="main" class="ui-content">
+				<h1>Why is my report not saved?</h1>
+				<p>Your report could be not saving for 1 of 2 reasons: Either you haven't saved this page to your Home screen as a Web App (applies mostly to iOS devices, e.g. iPhone, iPad, and iPod Touch) or you just haven't waited long enough.</p>
+				<h2>Save to Home Screen</h2>
+				<p>To create a shortcut to this Web App on your Home Screen, tap <img src="/fusion-henkle/assets/II062-share_icon_2x.png">, then tap Add to Home Screen.</p>
+				<h2>Auto Save</h2>
+				<p>This app is equipped with an auto save feature.  We will automatically save your report every 30 seconds.  You will know your report has been saved when you see the message at the top of your screen say, <em>"LAST SAVED AT 12:35:17 AM"</em> or at the relevant time.</p>
+			</div><!-- /content -->
+
+
+			<div data-role="footer" data-position="fixed" id="footer">
+				<div data-role="navbar">
+					<ul class="footer-links">
+						<li><a href="#checkIn"><i class="icon-arrow-down2"></i><br> Check In</a></li>
+						<li><a href="#report"><i class="icon-signup"></i><br> Interactions</a></li>
+						<li><a href="#checkOut" ng-click="setCheckOut()"><i class="icon-arrow-up2"></i><br> Check Out</a></li>
+					</ul>
+				</div>
+			</div><!-- /navbar -->
+		</div><!-- not saved info message -->
+
+
+
+
+
+
+
 		<div data-role="page" id="report">
 			<div data-role="header" data-position="fixed">
 				<h1>Interactions ({{App.numberOfInteractions && App.numberOfInteractions || "0" }})</h1>
 				<a href="#add" class="header-nav-item ui-btn-right" data-transition="slide"><i class="icon-plus"></i></a>
 			</div>
 
-			<p class="saved-message"></p>
+			<div class="saved-message"></div>
 				
 			<fieldset>
 				<ol class="report-list">
@@ -164,7 +199,7 @@
 				<h1>Report</h1>
 			</div>
 
-			<p class="saved-message"></p>
+			<div class="saved-message"></div>
 				
 				<fieldset>
 					<div class="ui-grid-a">
@@ -224,7 +259,7 @@
 				<h1>Check Out</h1>
 			</div>
 
-			<p class="saved-message"></p>
+			<div class="saved-message"></div>
 				
 				<fieldset>
 					<div class="ui-grid-a">
@@ -293,9 +328,7 @@
 					</ul>
 				</div>
 			</div><!-- /navbar -->
-
 		</div>
-
 	</form>
 
 
